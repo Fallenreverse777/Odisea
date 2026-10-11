@@ -13,6 +13,7 @@ from pydantic import BaseModel
 
 from . import config
 from .brain import Shadow
+from .planner import pop_due_reminders
 
 STATIC = Path(__file__).parent / "static"
 
@@ -52,6 +53,11 @@ def chat(body: ChatIn):
     if not text:
         raise HTTPException(status_code=400, detail="Empty message")
     return StreamingResponse(shadow.chat(text, device="phone"), media_type="text/plain; charset=utf-8")
+
+
+@app.get("/api/reminders/due", dependencies=[Depends(check_access)])
+def due_reminders():
+    return pop_due_reminders(shadow.memory)
 
 
 @app.post("/api/remember", dependencies=[Depends(check_access)])

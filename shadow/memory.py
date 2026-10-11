@@ -2,7 +2,7 @@
 
 import json
 import threading
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 
@@ -45,6 +45,12 @@ class Memory:
         with self._lock:
             return list(self._data["messages"])
 
+    def messages_on(self, day: date) -> list[dict]:
+        """All messages sent on a given (local) calendar day."""
+        with self._lock:
+            msgs = list(self._data["messages"])
+        return [m for m in msgs if datetime.fromisoformat(m["time"]).astimezone().date() == day]
+
     def clear_conversation(self) -> None:
         with self._lock:
             self._data["messages"] = []
@@ -59,6 +65,18 @@ class Memory:
         with self._lock:
             self._data["profile"][key] = value
             self._save()
+
+    def update(self, key: str, change, default=None):
+        """Read a profile value, pass it to `change`, save what it returns.
+
+        Done under the lock so two devices can't overwrite each other.
+        `change` returns (new_value, result); `result` is handed back.
+        """
+        with self._lock:
+            new_value, result = change(self._data["profile"].get(key, default))
+            self._data["profile"][key] = new_value
+            self._save()
+            return result
 
     # --- long-term facts ------------------------------------------------
     @property

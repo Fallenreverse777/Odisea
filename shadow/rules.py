@@ -15,10 +15,11 @@ import operator
 import random
 import re
 from collections.abc import Callable, Iterator
-from datetime import datetime
+from datetime import date, datetime, timedelta
 
 from . import config
 from .memory import Memory
+from .planner import PLANNER_RULES, pop_due_reminders
 
 # ---------------------------------------------------------------------------
 # Word lists
@@ -105,15 +106,38 @@ def calculate(expr: str) -> float:
 Rule = tuple[str, Callable[[re.Match, str, Memory], str]]
 
 
+FOLLOW_UPS = {
+    "sad": "Last time we talked you were feeling down. How are you today?",
+    "tired": "Last time you were pretty tired. Did you get some rest?",
+    "stressed": "Last time you were stressed. Is it any better?",
+    "angry": "Last time something was bugging you. Did it sort itself out?",
+}
+
+
 def greet(m, text, mem):
     name = name_or(mem)
     if not name:
         return f"Good {part_of_day()}. I'm Shadow. What should I call you?"
-    return random.choice([
+    lines = [random.choice([
         f"Good {part_of_day()}, {name}.",
         f"Hey {name}. Good to see you.",
-        f"{name}! What's on your mind?",
-    ])
+        f"{name}! Welcome back.",
+    ])]
+
+    # Follow up on a bad mood from an earlier day (only once).
+    mood = mem.get("last_mood")
+    if mood and mood["day"] < date.today().isoformat() and mood["mood"] in FOLLOW_UPS:
+        lines.append(FOLLOW_UPS[mood["mood"]])
+        mem.set("last_mood", None)
+
+    todos = mem.get("todos", [])
+    if todos:
+        lines.append(f"You have {len(todos)} thing{'s' if len(todos) != 1 else ''} on your list.")
+    today = date.today().isoformat()
+    later = [r for r in mem.get("reminders", []) if r["due"].startswith(today)]
+    if later:
+        lines.append(f"And {len(later)} reminder{'s' if len(later) != 1 else ''} for today.")
+    return " ".join(lines)
 
 
 def learn_name(m, text, mem):
@@ -187,20 +211,48 @@ def list_likes(m, text, mem):
 def feelings(m, text, mem):
     words = set(re.findall(r"[a-z']+", text))
     phrase = text  # for multi-word entries like "burnt out"
+
+    def note(mood):
+        mem.set("last_mood", {"mood": mood, "day": date.today().isoformat()})
+
     if words & SAD:
+        note("sad")
         return random.choice([
             "I'm sorry you're feeling that way. Do you want to talk about what's going on?",
             "That sounds hard. I'm here. What happened?",
         ])
     if words & TIRED or any(t in phrase for t in TIRED if " " in t):
+        note("tired")
         return "Sounds like you need some rest. Have you been sleeping okay?"
     if words & STRESSED:
+        note("stressed")
         return "That's a lot to carry. What's worrying you the most right now?"
     if words & ANGRY:
+        note("angry")
         return "That's frustrating. What set it off?"
     if words & HAPPY:
+        note("happy")
         return random.choice(["Glad to hear it.", "Good. Anything fun going on?", "Nice, love that for you."])
     return None  # not a feeling we recognise: let the next rules try
+
+
+def recap(m, text, mem):
+    when = m.group("when")
+    day = date.today() - timedelta(days=0 if when == "today" else 1)
+    if when == "last time":
+        earlier = [msg for msg in mem.all_messages()
+                   if datetime.fromisoformat(msg["time"]).astimezone().date() < date.today()]
+        if not earlier:
+            return "This is our first day talking."
+        day = datetime.fromisoformat(earlier[-1]["time"]).astimezone().date()
+
+    said = [msg["content"] for msg in mem.messages_on(day) if msg["role"] == "user"]
+    # Keep real conversation, not commands like "show my list" or "what time is it".
+    meaningful = [t for t in said if matching_rule(t) in CHAT_RULES and len(t.split()) > 2][-5:]
+    if not meaningful:
+        return f"We didn't really talk {when}." if said else f"We didn't talk {when}."
+    label = when if when != "last time" else f"last time ({day:%A})"
+    return f"{label[0].upper() + label[1:]} you told me:\n" + "\n".join(f"- {reflect(t.lower())}" for t in meaningful)
 
 
 def joke(m, text, mem):
@@ -235,6 +287,10 @@ def show_help(m, text, mem):
             "- 'remember that ...' / 'what do you remember?'\n"
             "- 'what time is it?' / 'what's the date?'\n"
             "- 'what is 12 * 7?'\n"
+            "- 'add milk to my list' / 'show my list' / 'done milk'\n"
+            "- 'remind me to call mom in 20 minutes' (or 'at 6pm', 'tomorrow at 9')\n"
+            "- 'show my reminders' / 'cancel reminder 1'\n"
+            "- 'what did we talk about yesterday?'\n"
             "- 'tell me a joke'\n"
             "- or just tell me how you're feeling")
 
@@ -264,6 +320,8 @@ def question(m, text, mem):
 
 RULES: list[Rule] = [
     (r"^(help|what can you do)\b", show_help),
+    *PLANNER_RULES,
+    (r"\bwhat did (we|i) (talk about|discuss|say|tell you)( about)? (?P<when>yesterday|today|last time)\b", recap),
     (r"^(hi|hello|hey|yo|hola|good (morning|afternoon|evening))\b", greet),
     (r"\b(my name is|call me|i am called|i'm called) (?P<name>[a-z][a-z' -]{0,30})$", learn_name),
     (r"\b(what'?s|what is) my name\b|\bwho am i\b", tell_name),
@@ -286,6 +344,23 @@ RULES: list[Rule] = [
     (r"\?$", question),
 ]
 
+# Rules that count as conversation (used by the recap). None = no rule matched.
+CHAT_RULES = {None, feelings, learn_like, remember_fact, i_feel, i_want, because, question}
+
+
+def matching_rule(message: str):
+    text = clean(message)
+    for pattern, handler in RULES:
+        if re.search(pattern, text):
+            return handler
+    return None
+
+
+def clean(message: str) -> str:
+    # Phone keyboards often type curly apostrophes; treat them as normal ones.
+    return " ".join(message.lower().replace("\u2019", "'").split())
+
+
 FALLBACKS = [
     "Tell me more.",
     "I see. And how does that make you feel?",
@@ -299,11 +374,13 @@ class RuleBrain:
         self.memory = memory
 
     def respond(self, user_text: str) -> Iterator[str]:
+        due = pop_due_reminders(self.memory)
+        if due:
+            yield "\n".join(due) + "\n\n"
         yield self.reply(user_text)
 
     def reply(self, user_text: str) -> str:
-        # Phone keyboards often type curly apostrophes; treat them as normal ones.
-        text = " ".join(user_text.lower().replace("\u2019", "'").split())
+        text = clean(user_text)
         for pattern, handler in RULES:
             match = re.search(pattern, text)
             if match:

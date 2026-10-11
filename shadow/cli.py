@@ -1,6 +1,9 @@
 """Chat with Shadow in your terminal:  python -m shadow.cli"""
 
+import threading
+
 from .brain import Shadow
+from .planner import pop_due_reminders
 
 HELP = """Commands:
   /remember <fact>   Tell Shadow something to always remember
@@ -10,8 +13,17 @@ HELP = """Commands:
   /quit              Leave"""
 
 
+def watch_reminders(shadow: Shadow, stop: threading.Event) -> None:
+    """Every 15 seconds, print any reminder whose time has come."""
+    while not stop.wait(15):
+        for reminder in pop_due_reminders(shadow.memory):
+            print(f"\n\aShadow: {reminder}\nYou: ", end="", flush=True)
+
+
 def main() -> None:
     shadow = Shadow()
+    stop = threading.Event()
+    threading.Thread(target=watch_reminders, args=(shadow, stop), daemon=True).start()
     print("Shadow is here. Type /help for commands.\n")
     while True:
         try:
@@ -48,6 +60,7 @@ def main() -> None:
         for chunk in shadow.chat(text, device="pc"):
             print(chunk, end="", flush=True)
         print("\n")
+    stop.set()
 
 
 if __name__ == "__main__":

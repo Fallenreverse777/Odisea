@@ -126,7 +126,20 @@ input.addEventListener("input", () => {
   input.style.height = "auto"; input.style.height = input.scrollHeight + "px";
 });
 
+async function checkReminders() {
+  try {
+    // Plain fetch: a background check should never pop up the access-code prompt.
+    const res = await fetch("/api/reminders/due", { headers: { "X-Access-Code": getCode() } });
+    if (!res.ok) return;
+    for (const text of await res.json()) {
+      add("assistant", text);
+      if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+    }
+  } catch {}
+}
+
 loadHistory();
+setInterval(checkReminders, 30000);
 </script>
 </body>
 </html>

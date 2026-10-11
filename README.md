@@ -45,6 +45,11 @@ It prints an address like `http://192.168.1.20:8000`. Open that on your phone wh
 | `what time is it?`, `what's the date?` | Tells you |
 | `what is 12 * 7?` | Does the maths |
 | `tell me a joke` | Tells one |
+| `add milk to my list`, `todo: call the bank` | Adds to your to-do list |
+| `show my list` / `done milk` / `cross off 2` | Shows or ticks off items |
+| `remind me to call mom in 20 minutes` | Sets a reminder (also `at 6pm`, `tomorrow at 9`) |
+| `show my reminders` / `cancel reminder 1` | Lists or cancels reminders |
+| `what did we talk about yesterday?` | Recaps a past conversation (`today`, `last time` too) |
 | `help` | Lists all of this |
 
 ## How the brain works (`shadow/rules.py`)
@@ -67,6 +72,10 @@ RULES = [
 ]
 ```
 
+When you say hi, Shadow also checks in on how you felt last time, and mentions your to-dos and today's reminders.
+
+Reminders pop up on their own while the terminal chat or the phone page is open (the page checks every 30 seconds). They only fire while Shadow is running on your PC.
+
 Rules near the top win. A rule can return `None` to pass the message on to the next rule.
 
 ## Project layout
@@ -74,6 +83,7 @@ Rules near the top win. A rule can return `None` to pass the message on to the n
 ```
 shadow/
   rules.py         Shadow's brain: the if/else rules
+  planner.py       to-do list and reminders rules
   memory.py        conversation, facts and what Shadow learned, saved in data/memory.json
   brain.py         picks the brain and saves the conversation
   cli.py           terminal chat
