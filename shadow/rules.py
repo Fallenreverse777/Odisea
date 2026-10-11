@@ -20,6 +20,7 @@ from datetime import date, datetime, timedelta
 from . import config
 from .memory import Memory
 from .planner import PLANNER_RULES, pop_due_reminders
+from .weather import WEATHER_RULES
 
 # ---------------------------------------------------------------------------
 # Word lists
@@ -291,6 +292,7 @@ def show_help(m, text, mem):
             "- 'remind me to call mom in 20 minutes' (or 'at 6pm', 'tomorrow at 9')\n"
             "- 'show my reminders' / 'cancel reminder 1'\n"
             "- 'what did we talk about yesterday?'\n"
+            "- 'I live in Madrid' / 'what's the weather?' / 'will it rain tomorrow?'\n"
             "- 'tell me a joke'\n"
             "- or just tell me how you're feeling")
 
@@ -321,6 +323,7 @@ def question(m, text, mem):
 RULES: list[Rule] = [
     (r"^(help|what can you do)\b", show_help),
     *PLANNER_RULES,
+    *WEATHER_RULES,
     (r"\bwhat did (we|i) (talk about|discuss|say|tell you)( about)? (?P<when>yesterday|today|last time)\b", recap),
     (r"^(hi|hello|hey|yo|hola|good (morning|afternoon|evening))\b", greet),
     (r"\b(my name is|call me|i am called|i'm called) (?P<name>[a-z][a-z' -]{0,30})$", learn_name),

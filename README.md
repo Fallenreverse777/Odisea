@@ -4,32 +4,52 @@ Shadow is a personal companion you can talk to from your PC's terminal or your p
 
 Shadow's brain is its own Python code, a loop of if/else rules. It runs **offline, for free, with no API key and no AI service**.
 
-## Setup (on your PC)
+## Start Shadow (one click)
+
+1. Install Python 3.10+ from https://www.python.org/downloads/ (on Windows, tick **"Add Python to PATH"**).
+2. Double-click the launcher in the `Odisea` folder:
+   - **Windows:** `start-shadow.bat`
+   - **Mac:** `start-shadow.command`
+   - **Linux:** `./start-shadow.sh`
+
+The first run sets everything up, which takes about a minute. After that it starts in seconds and opens the chat in your browser.
+Keep the window open while you use Shadow.
+
+**On your phone:** open the "On your phone" address the launcher prints (e.g. `http://192.168.1.20:8000`) while on the same Wi-Fi.
+Tip: add it to your home screen so it opens like an app. Set `SHADOW_ACCESS_CODE` in `.env` so only you can use it.
+If the phone can't connect, allow Python through your PC's firewall.
+
+## Start Shadow with your PC
+
+Turn this on once and Shadow runs quietly in the background whenever you log in. Your phone can reach it any time, and reminders pop up on your PC as notifications.
 
 ```bash
-python -m venv .venv
-.venv\Scripts\activate           # Mac/Linux: source .venv/bin/activate
-pip install -r requirements.txt
-copy .env.example .env           # Mac/Linux: cp .env.example .env
+.venv\Scripts\python -m shadow.autostart on      # Windows
+.venv/bin/python -m shadow.autostart on          # Mac / Linux
 ```
 
-Optional: in `.env`, set `SHADOW_ACCESS_CODE` so only you can use the phone page.
+Use `off` instead of `on` to turn it off, or leave it out to check whether it's on. While it's running, the launcher just opens the chat.
 
-## Talk to Shadow
+## Voice
 
-**On your PC (terminal):**
+**In the chat page:** tap 🔈 to have Shadow read its replies out loud.
+On your PC's browser (Chrome or Edge), the 🎤 button lets you talk to it.
+On the phone, use your keyboard's microphone key to dictate. Browsers only allow the page's mic over a secure connection.
+
+**Hands-free on your PC:**
 
 ```bash
-python -m shadow.cli
+.venv\Scripts\pip install -r requirements-voice.txt     # once (Mac/Linux: .venv/bin/pip)
+.venv\Scripts\python -m shadow.voice --wake              # then say "Shadow, what's the weather?"
 ```
 
-**On your phone:** start the server on your PC:
+Without `--wake`, you press Enter before each sentence. Say "Shadow, goodbye" to stop.
+Shadow speaks with your computer's built-in voice. Listening uses Google's free speech recognition, so it needs internet but no account.
+On Mac, you may need `brew install portaudio` before installing the voice packages.
 
-```bash
-python -m shadow.web
-```
+## Terminal chat
 
-It prints an address like `http://192.168.1.20:8000`. Open that on your phone while it's on the same Wi-Fi. If the page won't load, allow Python through your PC's firewall.
+Prefer the terminal? `.venv\Scripts\python -m shadow.cli` (Mac/Linux: `.venv/bin/python -m shadow.cli`).
 
 ## What Shadow understands
 
@@ -50,6 +70,8 @@ It prints an address like `http://192.168.1.20:8000`. Open that on your phone wh
 | `remind me to call mom in 20 minutes` | Sets a reminder (also `at 6pm`, `tomorrow at 9`) |
 | `show my reminders` / `cancel reminder 1` | Lists or cancels reminders |
 | `what did we talk about yesterday?` | Recaps a past conversation (`today`, `last time` too) |
+| `I live in Madrid` | Remembers your city |
+| `what's the weather?` / `will it rain tomorrow?` / `weather in Paris` | Forecast from Open-Meteo (free, no key) |
 | `help` | Lists all of this |
 
 ## How the brain works (`shadow/rules.py`)
@@ -74,7 +96,7 @@ RULES = [
 
 When you say hi, Shadow also checks in on how you felt last time, and mentions your to-dos and today's reminders.
 
-Reminders pop up on their own while the terminal chat or the phone page is open (the page checks every 30 seconds). They only fire while Shadow is running on your PC.
+Reminders pop up as PC notifications and in any open chat page, where the phone also vibrates. They only fire while Shadow is running on your PC, so turn on start-with-PC.
 
 Rules near the top win. A rule can return `None` to pass the message on to the next rule.
 
@@ -84,10 +106,14 @@ Rules near the top win. A rule can return `None` to pass the message on to the n
 shadow/
   rules.py         Shadow's brain: the if/else rules
   planner.py       to-do list and reminders rules
+  weather.py       weather rules (Open-Meteo)
+  voice.py         talk out loud on your PC
+  notify.py        PC pop-up notifications
+  autostart.py     start Shadow when you log in
   memory.py        conversation, facts and what Shadow learned, saved in data/memory.json
   brain.py         picks the brain and saves the conversation
   cli.py           terminal chat
-  web.py           web server for the phone
+  web.py           the server: chat page for PC and phone, delivers reminders
   static/          the phone chat page
   claude_brain.py  optional AI brain (off by default, see below)
   persona.py       personality for the AI brain
