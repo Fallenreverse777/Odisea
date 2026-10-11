@@ -1,20 +1,19 @@
 # Odisea: Shadow
 
-Shadow is a personal AI companion, powered by Claude. You can talk to it from your PC's terminal or from your phone's browser, and both share the same memory.
+Shadow is a personal companion you can talk to from your PC's terminal or your phone's browser. Both share the same memory.
+
+Shadow's brain is its own Python code, a loop of if/else rules. It runs **offline, for free, with no API key and no AI service**.
 
 ## Setup (on your PC)
 
-1. Get an API key at https://platform.claude.com (Settings → API Keys).
-2. Install and configure:
+```bash
+python -m venv .venv
+.venv\Scripts\activate           # Mac/Linux: source .venv/bin/activate
+pip install -r requirements.txt
+copy .env.example .env           # Mac/Linux: cp .env.example .env
+```
 
-   ```bash
-   python -m venv .venv
-   source .venv/bin/activate        # Windows: .venv\Scripts\activate
-   pip install -r requirements.txt
-   cp .env.example .env             # Windows: copy .env.example .env
-   ```
-
-3. Open `.env` and set `ANTHROPIC_API_KEY`. Also set `SHADOW_ACCESS_CODE` if you'll use your phone.
+Optional: in `.env`, set `SHADOW_ACCESS_CODE` so only you can use the phone page.
 
 ## Talk to Shadow
 
@@ -30,36 +29,60 @@ python -m shadow.cli
 python -m shadow.web
 ```
 
-It prints an address like `http://192.168.1.20:8000`. Open that on your phone while it's on the same Wi-Fi. On iPhone, use Share → "Add to Home Screen". On Android, use ⋮ → "Add to Home screen". Shadow then opens like an app.
-If your phone can't connect, allow Python through your PC's firewall on port 8000.
+It prints an address like `http://192.168.1.20:8000`. Open that on your phone while it's on the same Wi-Fi. If the page won't load, allow Python through your PC's firewall.
 
-## Commands
+## What Shadow understands
 
-| Command | What it does |
+| Say | Shadow |
 |---|---|
-| `/remember <fact>` | Shadow always keeps this in mind (works on phone too) |
-| `/facts` | List what Shadow remembers (terminal) |
-| `/forget <n>` | Remove a fact (terminal) |
-| `/clear` | Wipe the conversation, keep facts (terminal) |
+| `hi`, `good morning` | Greets you by name |
+| `my name is ...`, `call me ...` | Learns your name |
+| `I like ...` / `what do I like?` | Learns and lists your likes |
+| `remember that ...` / `what do you remember?` | Stores and recalls facts |
+| `how are you?` | Chats back |
+| `I'm tired / sad / stressed / happy` | Responds to your mood |
+| `I feel ...`, `I want ...`, `I need ...` | Asks you about it |
+| `what time is it?`, `what's the date?` | Tells you |
+| `what is 12 * 7?` | Does the maths |
+| `tell me a joke` | Tells one |
+| `help` | Lists all of this |
 
-## How it's built
+## How the brain works (`shadow/rules.py`)
+
+```
+your message → clean it up → try each rule in RULES, in order
+             → first pattern that matches → its function builds the reply
+             → nothing matched → a general fallback ("Tell me more.")
+```
+
+To teach Shadow something new, write a function and add a line to `RULES`:
+
+```python
+def favourite_colour(m, text, mem):
+    return "Mine is black. Obviously."
+
+RULES = [
+    (r"\bfavou?rite colou?r\b", favourite_colour),
+    ...
+]
+```
+
+Rules near the top win. A rule can return `None` to pass the message on to the next rule.
+
+## Project layout
 
 ```
 shadow/
-  persona.py   who Shadow is (edit this to change its personality)
-  memory.py    conversation + facts, saved in data/memory.json
-  brain.py     sends the conversation to Claude and streams the reply
-  cli.py       terminal chat
-  web.py       web server for the phone
-  static/      the phone chat page
+  rules.py         Shadow's brain: the if/else rules
+  memory.py        conversation, facts and what Shadow learned, saved in data/memory.json
+  brain.py         picks the brain and saves the conversation
+  cli.py           terminal chat
+  web.py           web server for the phone
+  static/          the phone chat page
+  claude_brain.py  optional AI brain (off by default, see below)
+  persona.py       personality for the AI brain
 ```
 
-Shadow sees your last 40 messages (`SHADOW_HISTORY_WINDOW`) plus all remembered facts on every turn.
+## Optional: AI brain
 
-## Roadmap
-
-- [x] Text chat with a personality and memory, on PC and phone
-- [ ] Shadow saves important facts on its own
-- [ ] Tools: weather, calendar, reminders, web search
-- [ ] Voice: speech-to-text, text-to-speech, wake word
-- [ ] Reach Shadow away from home (e.g. Tailscale or a small cloud server)
+If you ever want Shadow to hold free-form conversations, set `SHADOW_BRAIN=claude` and `ANTHROPIC_API_KEY` in `.env`, then run `pip install anthropic`. This is a paid service. The default rules brain needs none of it.

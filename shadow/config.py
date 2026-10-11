@@ -6,6 +6,10 @@ from dotenv import load_dotenv
 ROOT = Path(__file__).resolve().parent.parent
 load_dotenv(ROOT / ".env")
 
+# "rules" = Shadow's own if/else logic: free, offline, no API key needed.
+# "claude" = use the Claude API instead (needs ANTHROPIC_API_KEY and `pip install anthropic`).
+BRAIN = os.getenv("SHADOW_BRAIN", "rules").strip().lower()
+
 MODEL = os.getenv("SHADOW_MODEL", "claude-opus-5-5")
 # Casual chat doesn't need deep reasoning; "low" keeps replies fast and cheap.
 # Raise to "medium" or "high" if you want Shadow to think harder.

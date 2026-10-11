@@ -15,6 +15,7 @@ class Memory:
             self._data = json.loads(self._path.read_text(encoding="utf-8"))
         else:
             self._data = {"facts": [], "messages": []}
+        self._data.setdefault("profile", {})
 
     def _save(self) -> None:
         tmp = self._path.with_suffix(".tmp")
@@ -47,6 +48,16 @@ class Memory:
     def clear_conversation(self) -> None:
         with self._lock:
             self._data["messages"] = []
+            self._save()
+
+    # --- what Shadow has learned about the user ---------------------------
+    def get(self, key: str, default=None):
+        with self._lock:
+            return self._data["profile"].get(key, default)
+
+    def set(self, key: str, value) -> None:
+        with self._lock:
+            self._data["profile"][key] = value
             self._save()
 
     # --- long-term facts ------------------------------------------------

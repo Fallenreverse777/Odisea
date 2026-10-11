@@ -1,4 +1,5 @@
-anthropic>=1.0
 fastapi>=0.110
 uvicorn>=0.29
 python-dotenv>=1.0
+# Only needed if you switch to SHADOW_BRAIN=claude:
+# anthropic>=1.0
