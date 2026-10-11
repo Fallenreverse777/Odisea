@@ -18,4 +18,4 @@ if ! .venv/bin/python -m pip install -q --disable-pip-version-check -r requireme
 fi
 [ -f .env ] || cp .env.example .env
 
-.venv/bin/python -m shadow.web
+.venv/bin/python -m "shadow.${SHADOW_APP:-web}"

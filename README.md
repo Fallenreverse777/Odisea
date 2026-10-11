@@ -72,7 +72,48 @@ Prefer the terminal? `.venv\Scripts\python -m shadow.cli` (Mac/Linux: `.venv/bin
 | `what did we talk about yesterday?` | Recaps a past conversation (`today`, `last time` too) |
 | `I live in Madrid` | Remembers your city |
 | `what's the weather?` / `will it rain tomorrow?` / `weather in Paris` | Forecast from Open-Meteo (free, no key) |
+| `when I say ..., say ...` | Teaches Shadow a reply (it also asks when it doesn't know) |
+| `what have you learned?` / `forget that` | Shows or undoes what you've taught it |
 | `help` | Lists all of this |
+
+## Shadow learns from you
+
+When you ask Shadow something it can't answer, it asks what it should say. Your next message becomes the answer:
+
+```
+You:    what's your favourite movie?
+Shadow: I don't know how to answer that yet. What should I say when you ask me that?
+You:    Blade Runner, obviously.
+...
+You:    what's your favorite film          ← different words, same question
+Shadow: Blade Runner, obviously.
+```
+
+You can also teach it directly: `when I say good night, say sleep well`, or `learn: who made you = Alex did`.
+`what have you learned?` lists everything, `forget that` undoes the last thing, and `unlearn favourite movie` removes one.
+Your answers take priority over Shadow's built-in replies. Say `skip` if you don't want to teach it something.
+
+Matching ignores small words, plurals, accents and common synonyms (film/movie, made/created/built), and checks that the important words match. So "capital of Spain" won't get the answer you taught for "capital of France".
+
+## Shadow for a business
+
+A separate version of Shadow answers **customers** of a local business: opening hours ("are you open now?"), location, contact details, products and prices, and any question the owner teaches it. It understands simple Spanish too ("¿a qué hora abren el sábado?").
+
+**Start it:** double-click `start-business.bat` (Windows), `start-business.command` (Mac) or run `./start-business.sh` (Linux).
+The admin page opens on your PC, and it prints the customer chat address for other devices.
+
+| Page | Who | Address |
+|---|---|---|
+| Customer chat | Customers | `http://<your-pc-ip>:8001/` |
+| Admin | The owner | `http://localhost:8001/admin` (from other devices, set `SHADOW_ACCESS_CODE`) |
+
+**How it learns:**
+- Every question Shadow can't answer is saved under **"Questions Shadow couldn't answer"** on the admin page, with how often it was asked. Write an answer, and Shadow knows it from then on, including differently worded versions.
+- In **Teach & test**, try questions as a customer. When Shadow doesn't know, type the answer. Or write `if someone asks "do you have parking?" say "Yes, behind the shop."`
+- Edit the business details, opening hours, products and prices, and all learned Q&As on the same page, then click **Save changes**.
+
+It starts with an example bakery (from `business.example.json`); replace it with your own details on the admin page. Everything is saved in `data/business.json`.
+The business server is separate from your personal Shadow: customers can't see your chats, to-dos or memory.
 
 ## How the brain works (`shadow/rules.py`)
 
@@ -104,7 +145,10 @@ Rules near the top win. A rule can return `None` to pass the message on to the n
 
 ```
 shadow/
-  rules.py         Shadow's brain: the if/else rules
+  rules.py         Shadow's brain: the if/else rules, plus learning from you
+  learning.py      matching questions to what Shadow has learned
+  business.py      the business brain (hours, contact, prices, learned Q&As)
+  business_web.py  the business server: customer chat + admin page
   planner.py       to-do list and reminders rules
   weather.py       weather rules (Open-Meteo)
   voice.py         talk out loud on your PC

@@ -23,5 +23,6 @@ if errorlevel 1 (
 )
 if not exist ".env" copy ".env.example" ".env" >nul
 
-".venv\Scripts\python.exe" -m shadow.web
+if "%SHADOW_APP%"=="" set SHADOW_APP=web
+".venv\Scripts\python.exe" -m shadow.%SHADOW_APP%
 pause

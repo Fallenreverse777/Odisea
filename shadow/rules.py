@@ -18,6 +18,7 @@ from collections.abc import Callable, Iterator
 from datetime import date, datetime, timedelta
 
 from . import config
+from .learning import add_or_update, best_match, parse_teaching
 from .memory import Memory
 from .planner import PLANNER_RULES, pop_due_reminders
 from .weather import WEATHER_RULES
@@ -256,6 +257,33 @@ def recap(m, text, mem):
     return f"{label[0].upper() + label[1:]} you told me:\n" + "\n".join(f"- {reflect(t.lower())}" for t in meaningful)
 
 
+def list_learned(m, text, mem):
+    learned = mem.get("learned", [])
+    if not learned:
+        return ("I haven't learned anything from you yet. Teach me with "
+                "'when I say ..., say ...', or answer me when I ask what to say.")
+    lines = [f"- “{e['q']}” → {e['a']}" for e in learned[-15:]]
+    more = f"\n(and {len(learned) - 15} more)" if len(learned) > 15 else ""
+    return "Here's what you've taught me:\n" + "\n".join(lines) + more
+
+
+def forget_last_learned(m, text, mem):
+    learned = mem.get("learned", [])
+    if not learned:
+        return "There's nothing to forget."
+    mem.set("learned", learned[:-1])
+    return f"Okay, I've forgotten what to say to “{learned[-1]['q']}”."
+
+
+def forget_learned(m, text, mem):
+    learned = mem.get("learned", [])
+    score, entry = best_match(learned, m.group("what"))
+    if not entry or score < 0.5:
+        return "I couldn't find that in what you've taught me. Say 'what have you learned' to see it all."
+    mem.set("learned", [e for e in learned if e is not entry])
+    return f"Forgotten: “{entry['q']}”."
+
+
 def joke(m, text, mem):
     return random.choice(JOKES)
 
@@ -294,6 +322,8 @@ def show_help(m, text, mem):
             "- 'what did we talk about yesterday?'\n"
             "- 'I live in Madrid' / 'what's the weather?' / 'will it rain tomorrow?'\n"
             "- 'tell me a joke'\n"
+            "- teach me: 'when I say ..., say ...' or answer when I ask what to say\n"
+            "- 'what have you learned?' / 'forget that'\n"
             "- or just tell me how you're feeling")
 
 
@@ -364,6 +394,18 @@ def clean(message: str) -> str:
     return " ".join(message.lower().replace("\u2019", "'").split())
 
 
+# Managing what you taught me: checked before anything you taught me.
+LEARNING_RULES: list[Rule] = [
+    (r"\bwhat (have|did) you learn(ed|t)?\b|\bwhat have i taught you\b", list_learned),
+    (r"^(forget|unlearn|undo) (that|it|the last one)$", forget_last_learned),
+    (r"^(unlearn|forget what you learned about|forget what i taught you about) (?P<what>.+)", forget_learned),
+]
+
+# General chat rules, tried only after everything else (including what you taught me).
+GENERIC_RULES = {i_feel, i_want, because, question}
+QUESTION = re.compile(r"\?$|^(what|whats|who|whos|whom|whose|where|wheres|when|why|how|hows|which|do|does|did|can|could|"
+                      r"will|would|should|is|are|was|were|have|has|tell me)\b")
+
 FALLBACKS = [
     "Tell me more.",
     "I see. And how does that make you feel?",
@@ -384,10 +426,60 @@ class RuleBrain:
 
     def reply(self, user_text: str) -> str:
         text = clean(user_text)
+        mem = self.memory
+
+        # 1. You're teaching me directly: "when I say X, say Y".
+        taught = parse_teaching(user_text)
+        if taught:
+            question, answer = taught
+            self.learn(question, answer)
+            return f"Got it. When you say “{question}”, I'll say: {answer}"
+
+        for pattern, handler in LEARNING_RULES:
+            if match := re.search(pattern, text):
+                mem.set("pending_teach", None)
+                return handler(match, text, mem)
+
+        # 2. You're answering my "what should I say?" from last time.
+        pending = mem.get("pending_teach")
+        if pending:
+            mem.set("pending_teach", None)
+            if re.fullmatch(r"(skip|never ?mind|no|nothing|forget it|cancel|dunno|i don'?t know)\W*", text):
+                return "No problem."
+            if matching_rule(user_text) in CHAT_RULES:  # not a command, so it's the answer
+                self.learn(pending, user_text.strip())
+                return f"Thanks, now I know! Next time you ask “{pending}”, I'll say that."
+
+        # 3. Something you taught me that matches closely: your answers win.
+        learned = mem.get("learned", [])
+        score, entry = best_match(learned, user_text)
+        if entry and score >= 0.75:
+            return entry["a"]
+
+        # 4. My built-in rules (except the general chat ones).
         for pattern, handler in RULES:
+            if handler in GENERIC_RULES:
+                continue
             match = re.search(pattern, text)
             if match:
-                answer = handler(match, text, self.memory)
+                answer = handler(match, text, mem)
                 if answer:  # a rule can return None to pass to the next one
                     return answer
+
+        # 5. Something you taught me that matches loosely.
+        if entry and score >= 0.55:
+            return entry["a"]
+
+        # 6. A question I can't answer: ask you to teach me.
+        if QUESTION.search(text):
+            mem.set("pending_teach", user_text.strip())
+            return "I don't know how to answer that yet. What should I say when you ask me that? (Say 'skip' to leave it.)"
+
+        # 7. General chat.
+        for pattern, handler in RULES:
+            if handler in GENERIC_RULES and (match := re.search(pattern, text)):
+                return handler(match, text, mem)
         return random.choice(FALLBACKS)
+
+    def learn(self, question: str, answer: str) -> None:
+        self.memory.update("learned", lambda learned: (add_or_update(learned, question, answer), None), [])
