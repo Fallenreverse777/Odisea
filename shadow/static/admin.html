@@ -17,6 +17,17 @@
   .hint { color:var(--muted); font-size:13px; margin:0 0 12px; }
   .badge { background:var(--warn); color:#fff; border-radius:10px; padding:1px 8px; font-size:13px; }
   .badge:empty { display:none; }
+  .req { padding:12px 0; border-top:1px solid var(--line); display:grid; grid-template-columns:1fr auto; gap:8px; }
+  .req:first-of-type { border-top:0; }
+  .req.done { opacity:.55; }
+  .req .who { font-weight:600; }
+  .req .who a { color:var(--brand); }
+  .req .meta { color:var(--muted); font-size:13px; }
+  .req .actions { display:flex; gap:6px; align-items:start; }
+  .row.emerg { grid-template-columns:1fr 1.4fr auto; }
+  .check { display:flex; align-items:center; gap:8px; margin-top:12px; color:var(--text); font-size:15px; }
+  .check input { width:auto; }
+  select { border:1px solid var(--line); border-radius:8px; padding:8px 10px; font:inherit; background:#fff; }
   label { display:block; font-size:13px; color:var(--muted); margin:10px 0 4px; }
   input, textarea { width:100%; border:1px solid var(--line); border-radius:8px; padding:8px 10px; font:inherit; background:#fff; color:var(--text); }
   textarea { resize:vertical; min-height:60px; }
@@ -44,7 +55,7 @@
   #savebar div { max-width:860px; margin:0 auto; display:flex; align-items:center; gap:12px; }
   #status { color:var(--muted); font-size:14px; }
   @media (max-width:640px) {
-    .grid, .row.item, .row.faq { grid-template-columns:1fr; }
+    .grid, .row.item, .row.faq, .row.emerg { grid-template-columns:1fr; }
     .row { border-bottom:1px dashed var(--line); padding-bottom:8px; }
   }
 </style>
@@ -53,6 +64,23 @@
 <main>
   <h1 id="title">Shadow admin</h1>
   <p class="sub">Teach Shadow about your business. Customers chat at <a id="custLink" href="/" target="_blank">the customer page</a>.</p>
+
+  <section>
+    <h2>Type of business</h2>
+    <p class="hint">Start from a ready-made template for your trade: typical services, prices, customer questions and emergency advice.
+      It replaces those sections on this page (your name, contact details and address stay). Review it, change the prices, then <strong>Save</strong>.</p>
+    <div class="inline">
+      <select id="templatePick"><option value="">Choose your trade…</option></select>
+      <button type="button" id="useTemplate">Use template</button>
+    </div>
+    <p class="hint" id="currentType" style="margin-top:8px"></p>
+  </section>
+
+  <section>
+    <h2>Booking &amp; call-back requests <span id="reqCount" class="badge"></span></h2>
+    <p class="hint">Customers who asked to book, get a quote or be called back. Call them to confirm.</p>
+    <div id="requests"></div>
+  </section>
 
   <section>
     <h2>Teach &amp; test</h2>
@@ -81,6 +109,25 @@
     </div>
     <label>Address</label><input data-field="address">
     <label>About (one or two sentences)</label><textarea data-field="about"></textarea>
+  </section>
+
+  <section>
+    <h2>Bookings &amp; service area</h2>
+    <label class="check"><input type="checkbox" id="bookingsOn"> Let customers request a booking, quote or call-back in the chat</label>
+    <div class="grid">
+      <div><label>Button text</label><input data-field="booking_label" placeholder="Book an appointment"></div>
+      <div><label>Areas you cover (leave empty if customers come to you)</label><input data-field="service_area" placeholder="City centre, North, Getafe…"></div>
+    </div>
+    <label>What Shadow asks about the job</label><input data-field="booking_question" placeholder="What do you need?">
+  </section>
+
+  <section>
+    <h2>Emergencies</h2>
+    <p class="hint">When a customer's message contains all the words of one of these phrases, Shadow immediately replies with your message and phone number.
+      Separate phrases with <strong>|</strong>. Keep the advice simple and safe, and point people to the emergency number when lives may be at risk.</p>
+    <label>Emergency phone (if different from your normal phone)</label><input data-field="emergency_phone">
+    <div id="emergencies" style="margin-top:12px"></div>
+    <button type="button" id="addEmergency">+ Add emergency</button>
   </section>
 
   <section>
@@ -155,8 +202,71 @@ function renderAll() {
   const hours = document.getElementById("hours");
   hours.replaceChildren(...DAYS.map(d => el("div", { className: "row hours" },
     el("span", { textContent: d[0].toUpperCase() + d.slice(1) }), bound(state.hours, d, "input", "closed"))));
-  renderItems(); renderFaqs(); renderUnanswered();
+  const on = document.getElementById("bookingsOn");
+  on.checked = !!state.bookings;
+  on.onchange = () => { state.bookings = on.checked; markDirty(); };
+  document.getElementById("currentType").textContent = state.type ? "Current type: " + state.type : "";
+  renderItems(); renderFaqs(); renderUnanswered(); renderEmergencies(); renderRequests();
 }
+
+function renderEmergencies() {
+  state.emergencies = state.emergencies || [];
+  document.getElementById("emergencies").replaceChildren(...state.emergencies.map((em, i) => el("div", { className: "row emerg" },
+    bound(em, "keywords", "textarea", "burst pipe | flooding | water everywhere"), bound(em, "message", "textarea", "What Shadow should tell them"),
+    el("button", { type: "button", className: "x", textContent: "✕", title: "Remove",
+      onclick: () => { state.emergencies.splice(i, 1); renderEmergencies(); markDirty(); } }))));
+}
+
+function renderRequests() {
+  const list = [...(state.requests || [])].reverse();  // newest first
+  const fresh = list.filter(r => r.status === "new").length;
+  document.getElementById("reqCount").textContent = fresh || "";
+  document.title = (fresh ? `(${fresh}) ` : "") + state.name + " · Shadow admin";
+  const box = document.getElementById("requests");
+  if (!list.length) { box.replaceChildren(el("p", { className: "hint", textContent: "No requests yet." })); return; }
+  box.replaceChildren(...list.map(r => {
+    const when = r.time ? new Date(r.time).toLocaleString() : "";
+    const phone = el("a", { href: "tel:" + r.phone.replace(/[^+\d]/g, ""), textContent: r.phone });
+    return el("div", { className: "req" + (r.status === "done" ? " done" : "") },
+      el("div", {},
+        el("div", { className: "who" }, r.name + " · ", phone),
+        el("div", { textContent: r.details }),
+        el("div", { className: "meta", textContent: `Preferred: ${r.when} · received ${when}` })),
+      el("div", { className: "actions" },
+        r.status === "new"
+          ? el("button", { type: "button", className: "primary", textContent: "Done", onclick: () => setRequest(r.id, "done") })
+          : el("button", { type: "button", textContent: "Reopen", onclick: () => setRequest(r.id, "new") }),
+        el("button", { type: "button", className: "x", textContent: "✕", title: "Delete", onclick: () => setRequest(r.id, "delete") })));
+  }));
+}
+
+async function setRequest(id, next) {
+  if (next === "delete" && !confirm("Delete this request?")) return;
+  try {
+    await api("/api/admin/requests/" + id, { method: "POST", body: JSON.stringify({ status: next }) });
+    if (next === "delete") state.requests = state.requests.filter(r => r.id !== id);
+    else state.requests.find(r => r.id === id).status = next;
+    renderRequests();
+  } catch (e) { status(e.message); }
+}
+
+// ---- templates --------------------------------------------------------------
+api("/api/admin/templates").then(list => {
+  const pick = document.getElementById("templatePick");
+  for (const t of list) pick.append(el("option", { value: t.id, textContent: t.label }));
+}).catch(() => {});
+
+document.getElementById("useTemplate").onclick = async () => {
+  const id = document.getElementById("templatePick").value;
+  if (!id) return;
+  if (!confirm("This replaces your services, prices, Q&As, hours and emergencies on this page. Continue?")) return;
+  try {
+    const tpl = await api("/api/admin/templates/" + id);
+    Object.assign(state, tpl);
+    renderAll(); markDirty();
+    status("Template loaded. Check the details and prices, then click Save changes.");
+  } catch (e) { status(e.message); }
+};
 
 function renderItems() {
   document.getElementById("items").replaceChildren(...state.items.map((item, i) => el("div", { className: "row item" },
@@ -253,6 +363,7 @@ document.getElementById("chatForm").addEventListener("submit", async (e) => {
 
 // ---- save -----------------------------------------------------------------
 document.getElementById("addItem").onclick = () => { state.items.push({ name: "", price: "", details: "" }); renderItems(); markDirty(); };
+document.getElementById("addEmergency").onclick = () => { state.emergencies.push({ keywords: "", message: "" }); renderEmergencies(); markDirty(); };
 document.getElementById("addFaq").onclick = () => { state.faqs.push({ q: "", a: "" }); renderFaqs(); markDirty(); };
 
 document.getElementById("save").onclick = async () => {
@@ -278,13 +389,17 @@ api("/api/admin/kb").then(kb => {
 setInterval(async () => {
   try {
     const kb = await api("/api/admin/kb");
+    if (JSON.stringify(kb.requests) !== JSON.stringify(state.requests)) {
+      state.requests = kb.requests;
+      renderRequests();
+    }
     const same = JSON.stringify(kb.unanswered.map(u => [u.q, u.count])) === JSON.stringify(state.unanswered.map(u => [u.q, u.count]));
     const typing = [...document.querySelectorAll("#unanswered textarea")].some(t => t.value.trim());
     if (same || typing) return;  // don't wipe an answer you're writing
     state.unanswered = kb.unanswered;
     renderUnanswered();
   } catch {}
-}, 30000);
+}, 15000);
 </script>
 </body>
 </html>

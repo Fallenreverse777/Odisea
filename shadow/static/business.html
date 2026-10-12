@@ -21,6 +21,8 @@
   #chips { display:flex; gap:8px; padding:0 16px 10px; flex-wrap:wrap; }
   #chips button { border:1px solid var(--brand); color:var(--brand); background:transparent; border-radius:16px;
     padding:6px 12px; font:inherit; font-size:14px; }
+  #chips button.main { background:var(--brand); color:#fff; }
+  #chips button.urgent { border-color:#c0392b; color:#c0392b; }
   form { display:flex; gap:8px; padding:10px 12px; padding-bottom:max(10px, env(safe-area-inset-bottom));
     background:var(--card); border-top:1px solid var(--line); }
   input { flex:1; border:1px solid var(--line); outline:0; border-radius:20px; padding:10px 14px; font:inherit; background:var(--bg); }
@@ -31,13 +33,7 @@
 <body>
 <header><h1 id="name">…</h1><p id="about"></p></header>
 <div id="log"></div>
-<div id="chips">
-  <button type="button">Are you open now?</button>
-  <button type="button">Opening hours</button>
-  <button type="button">Where are you?</button>
-  <button type="button">Prices</button>
-  <button type="button">Contact</button>
-</div>
+<div id="chips"></div>
 <form id="form">
   <input id="input" placeholder="Ask us anything…" autocomplete="off" maxlength="500">
   <button id="send" type="submit">Send</button>
@@ -46,6 +42,14 @@
 const log = document.getElementById("log");
 const input = document.getElementById("input");
 const send = document.getElementById("send");
+
+// One id per visitor, so a booking conversation isn't mixed up with someone else's.
+let session = "";
+try { session = sessionStorage.getItem("shadowSession") || ""; } catch {}
+if (!session) {
+  session = Date.now().toString(36) + Math.random().toString(36).slice(2, 12);
+  try { sessionStorage.setItem("shadowSession", session); } catch {}
+}
 
 function add(cls, text) {
   const el = document.createElement("div");
@@ -60,7 +64,7 @@ async function ask(text) {
   send.disabled = true;
   try {
     const res = await fetch("/api/ask", { method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: text }) });
+      body: JSON.stringify({ message: text, session }) });
     if (!res.ok) throw new Error();
     add("bot", (await res.json()).reply);
   } catch { add("bot", "Sorry, something went wrong. Please try again."); }
@@ -74,13 +78,25 @@ document.getElementById("form").addEventListener("submit", (e) => {
   input.value = "";
   ask(text);
 });
-document.querySelectorAll("#chips button").forEach(b => b.addEventListener("click", () => ask(b.textContent)));
+function chip(label, question, cls = "") {
+  const b = document.createElement("button");
+  b.type = "button"; b.className = cls; b.textContent = label;
+  b.addEventListener("click", () => ask(question || label));
+  document.getElementById("chips").append(b);
+}
 
 fetch("/api/info").then(r => r.json()).then(info => {
   document.getElementById("name").textContent = info.name;
   document.getElementById("about").textContent = info.about;
   document.title = "Chat with " + info.name;
-  add("bot", `Hi! I'm the assistant for ${info.name}. Ask me about opening hours, prices, where we are, or anything else.`);
+  if (info.bookings) chip(info.booking_label, "I'd like to book: " + info.booking_label, "main");
+  chip("Are you open now?");
+  chip("Prices");
+  chip(info.service_area ? "Do you cover my area?" : "Where are you?", info.service_area ? "Which areas do you cover?" : "Where are you?");
+  chip("Contact");
+  if (info.emergencies) chip("⚠️ Emergency", "It's an emergency", "urgent");
+  add("bot", `Hi! I'm the assistant for ${info.name}. Ask me about prices, opening hours` +
+    (info.bookings ? `, or say “${info.booking_label.toLowerCase()}”` : "") + `. How can I help?`);
 });
 </script>
 </body>

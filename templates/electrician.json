@@ -1,0 +1,104 @@
+{
+  "label": "Electrician",
+  "about": "Qualified electricians for repairs, rewiring, installations and electrical safety checks.",
+  "hours": {
+    "monday": "08:00-18:00",
+    "tuesday": "08:00-18:00",
+    "wednesday": "08:00-18:00",
+    "thursday": "08:00-18:00",
+    "friday": "08:00-18:00",
+    "saturday": "09:00-13:00",
+    "sunday": "closed"
+  },
+  "service_area": "City centre and surrounding areas (up to 20 km)",
+  "bookings": true,
+  "booking_label": "Request a visit or quote",
+  "booking_question": "What do you need? (e.g. power cut in part of the house, new sockets, lights) Include your address or area.",
+  "items": [
+    {
+      "name": "Call-out / visit",
+      "price": "from 50 €",
+      "details": "Includes the first 30 minutes"
+    },
+    {
+      "name": "Hourly rate",
+      "price": "45 €/hour",
+      "details": ""
+    },
+    {
+      "name": "Fault finding",
+      "price": "from 60 €",
+      "details": "Tripping breakers, no power, flickering lights"
+    },
+    {
+      "name": "New socket or switch",
+      "price": "from 40 €",
+      "details": "Per point"
+    },
+    {
+      "name": "Light fitting installation",
+      "price": "from 40 €",
+      "details": "Per light"
+    },
+    {
+      "name": "Fuse box / consumer unit replacement",
+      "price": "from 450 €",
+      "details": ""
+    },
+    {
+      "name": "Electrical safety inspection",
+      "price": "from 120 €",
+      "details": "With certificate"
+    },
+    {
+      "name": "EV charger installation",
+      "price": "from 700 €",
+      "details": "Charger not included"
+    },
+    {
+      "name": "Emergency call-out",
+      "price": "from 100 €",
+      "details": "Evenings, nights and weekends"
+    }
+  ],
+  "faqs": [
+    {
+      "q": "Do you do emergency call-outs? | 24 hour electrician | can you come tonight | out of hours",
+      "a": "Yes, we do emergency call-outs evenings, nights and weekends. Call us and we'll come as soon as possible."
+    },
+    {
+      "q": "Are you qualified? | certified | licensed | insured",
+      "a": "Yes, all our electricians are qualified and certified, and we're fully insured."
+    },
+    {
+      "q": "My breaker keeps tripping | trip switch keeps going | fuse keeps blowing | power keeps cutting out",
+      "a": "That usually means a faulty appliance or circuit. Try unplugging everything on that circuit and switching it back on. If it still trips, don't keep resetting it: book a visit and we'll find the fault."
+    },
+    {
+      "q": "Some of my sockets don't work | half the house has no power | no power in some rooms",
+      "a": "Check your fuse box first: if a switch has tripped, flip it back on. If it trips again or nothing has tripped, book a visit and we'll find the fault."
+    },
+    {
+      "q": "Do you give free quotes? | do you charge for quotes | free estimate",
+      "a": "Quotes are free for installations and bigger jobs. For repairs we charge the call-out fee, which includes the first 30 minutes."
+    },
+    {
+      "q": "Do you give certificates? | electrical certificate | inspection report",
+      "a": "Yes, we issue a certificate for inspections and new installations."
+    },
+    {
+      "q": "How do I pay? | payment methods | card | cash | transfer",
+      "a": "You can pay by card, cash or bank transfer when the job is done."
+    }
+  ],
+  "emergencies": [
+    {
+      "keywords": "sparks | sparking | burning smell | smell of burning | smoke from socket | electric shock | got a shock | electrocuted | electrical fire | chispas | quemado",
+      "message": "If there's a fire or someone has had a serious electric shock, call your local emergency number now. Don't touch anyone who is still in contact with electricity. If you can do it safely, switch off the power at the main switch in the fuse box. Then call us."
+    },
+    {
+      "keywords": "power line down | fallen power line | cable down in the street",
+      "message": "Stay well away (at least 10 metres) and keep others away. Call your local emergency number and the electricity company. Never touch a fallen line."
+    }
+  ]
+}

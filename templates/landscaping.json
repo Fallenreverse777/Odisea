@@ -1,0 +1,73 @@
+{
+  "label": "Gardening / landscaping",
+  "about": "Garden maintenance, lawn care, hedge and tree work, and garden design.",
+  "hours": {
+    "monday": "08:00-18:00",
+    "tuesday": "08:00-18:00",
+    "wednesday": "08:00-18:00",
+    "thursday": "08:00-18:00",
+    "friday": "08:00-18:00",
+    "saturday": "09:00-13:00",
+    "sunday": "closed"
+  },
+  "service_area": "City and surrounding areas (up to 25 km)",
+  "bookings": true,
+  "booking_label": "Request a visit or quote",
+  "booking_question": "What do you need done in the garden, and roughly how big is it? Include your address or area.",
+  "items": [
+    {
+      "name": "Garden maintenance",
+      "price": "from 25 €/hour",
+      "details": "Regular or one-off"
+    },
+    {
+      "name": "Lawn mowing",
+      "price": "from 30 €",
+      "details": "Per visit, small to medium lawns"
+    },
+    {
+      "name": "Hedge trimming",
+      "price": "from 50 €",
+      "details": "Waste removal included"
+    },
+    {
+      "name": "Tree pruning or removal",
+      "price": "quote",
+      "details": ""
+    },
+    {
+      "name": "Garden clearance",
+      "price": "from 150 €",
+      "details": "Waste removal included"
+    },
+    {
+      "name": "Garden design",
+      "price": "quote",
+      "details": "Free first visit"
+    }
+  ],
+  "faqs": [
+    {
+      "q": "Do you take away the garden waste? | waste removal | green waste | rubbish",
+      "a": "Yes, we take away all garden waste and it's included in the price."
+    },
+    {
+      "q": "Do you do regular visits? | weekly | fortnightly | monthly | maintenance contract",
+      "a": "Yes, weekly, fortnightly or monthly. Regular clients get a discounted rate."
+    },
+    {
+      "q": "Do you give free quotes? | do you charge for quotes | free estimate",
+      "a": "Yes, we'll visit and give you a free quote."
+    },
+    {
+      "q": "Are you insured? | insurance",
+      "a": "Yes, we're fully insured, including for tree work."
+    }
+  ],
+  "emergencies": [
+    {
+      "keywords": "tree fell | fallen tree | tree has fallen | tree on power line | tree on the house | arbol caido",
+      "message": "Keep everyone away from the tree. If it's touching power lines, stay at least 10 metres away and call your local emergency number and the electricity company: never touch it. If it's blocking a road or damaged the house, call us and we'll come as soon as possible."
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "label": "Heating & air conditioning",
+  "about": "Boiler, heating and air conditioning installation, servicing and repairs.",
+  "hours": {
+    "monday": "08:00-18:00",
+    "tuesday": "08:00-18:00",
+    "wednesday": "08:00-18:00",
+    "thursday": "08:00-18:00",
+    "friday": "08:00-18:00",
+    "saturday": "09:00-13:00",
+    "sunday": "closed"
+  },
+  "service_area": "City centre and surrounding areas (up to 25 km)",
+  "bookings": true,
+  "booking_label": "Book a service or repair",
+  "booking_question": "What do you need? (e.g. boiler service, no heating, AC not cooling) Include your address or area.",
+  "items": [
+    {
+      "name": "Boiler service",
+      "price": "from 80 €",
+      "details": "Yearly service with safety check"
+    },
+    {
+      "name": "Boiler repair",
+      "price": "from 90 €",
+      "details": "Diagnosis included"
+    },
+    {
+      "name": "Air conditioning service",
+      "price": "from 70 €",
+      "details": "Clean and check, per unit"
+    },
+    {
+      "name": "Air conditioning repair",
+      "price": "from 90 €",
+      "details": ""
+    },
+    {
+      "name": "Air conditioning installation",
+      "price": "from 600 €",
+      "details": "Split unit, installation included"
+    },
+    {
+      "name": "Radiator installation",
+      "price": "from 150 €",
+      "details": "Plus the radiator"
+    },
+    {
+      "name": "Gas safety check",
+      "price": "from 70 €",
+      "details": "With certificate"
+    }
+  ],
+  "faqs": [
+    {
+      "q": "My heating isn't working | no heating | radiators cold | boiler not working",
+      "a": "First check the boiler has power, the thermostat is turned up, and the pressure gauge is between 1 and 1.5 bar. If it shows an error code, note it down. If it still won't work, book a repair and we'll come out."
+    },
+    {
+      "q": "My AC is not cooling | air conditioning blowing warm air | aircon not working",
+      "a": "Check the remote is on 'cool' mode and the filters aren't clogged. If it still blows warm air, it may need a service or a gas recharge: book a visit."
+    },
+    {
+      "q": "How often should I service my boiler? | annual service",
+      "a": "Once a year, ideally before winter. It keeps it safe and efficient and keeps the warranty valid."
+    },
+    {
+      "q": "Do you give free quotes? | do you charge for quotes | free estimate",
+      "a": "Yes, installation quotes are free. We'll visit, look at your home and give you a fixed price."
+    },
+    {
+      "q": "Are you gas certified? | qualified | licensed | insured",
+      "a": "Yes, our engineers are gas certified and we're fully insured."
+    },
+    {
+      "q": "Do you do emergency call-outs? | out of hours | can you come tonight",
+      "a": "Yes, for no heating or hot water in winter and for gas issues. Call us and we'll come as soon as possible."
+    }
+  ],
+  "emergencies": [
+    {
+      "keywords": "smell gas | gas smell | gas leak | huele a gas | fuga de gas",
+      "message": "If you smell gas: don't switch anything on or off, no flames or smoking. Open doors and windows, turn off the gas at the meter if you can do it safely, then leave the building and call the gas emergency line or your local emergency number from outside."
+    },
+    {
+      "keywords": "carbon monoxide | co alarm | monoxide alarm | monoxido",
+      "message": "If your carbon monoxide alarm is going off or people feel dizzy, sick or sleepy: get everyone out into fresh air now, leave the door open, and call your local emergency number. Don't go back in until it's been checked."
+    }
+  ]
+}

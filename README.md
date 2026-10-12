@@ -112,7 +112,33 @@ The admin page opens on your PC, and it prints the customer chat address for oth
 - In **Teach & test**, try questions as a customer. When Shadow doesn't know, type the answer. Or write `if someone asks "do you have parking?" say "Yes, behind the shop."`
 - Edit the business details, opening hours, products and prices, and all learned Q&As on the same page, then click **Save changes**.
 
-It starts with an example bakery (from `business.example.json`); replace it with your own details on the admin page. Everything is saved in `data/business.json`.
+### Templates for trades
+
+On the admin page, **Type of business** loads a ready-made template:
+
+| Template | Includes |
+|---|---|
+| Plumber | Call-outs, leaks, blockages, boilers; burst pipe and gas leak emergencies |
+| Electrician | Fault finding, sockets, fuse boxes, EV chargers; sparks, shocks, fallen power lines |
+| Heating & air conditioning | Boiler and AC service and repair; gas leak and carbon monoxide alarms |
+| Car mechanic / garage | Services, brakes, diagnostics, tyres; roadside breakdowns |
+| Handyman / repairs | Furniture assembly, shelves, painting, small jobs |
+| Cleaning service | Regular, deep and end-of-tenancy cleans |
+| Gardening / landscaping | Maintenance, hedges, trees, clearance; fallen trees |
+| Veterinary clinic | Consultations, vaccinations, neutering; poisoning, breathing problems, injuries |
+| Hair salon / barber | Cuts, colour, highlights, walk-ins, patch tests |
+
+Each template fills in typical services and example prices, common customer questions, emergency advice and booking questions.
+**Change the prices and details to match the business**, then click **Save changes**. Templates are plain JSON files in `templates/`, so you can add new trades.
+
+### What trade customers get
+
+- **Emergencies first:** "my pipe burst", "I smell gas", "my dog ate chocolate" get immediate safety steps and the phone number. The advice is deliberately simple and points to the local emergency number when lives may be at risk. Owners can edit it in **Emergencies**.
+- **Service area:** "do you cover Getafe?" → "Yes, we cover Getafe." (set **Areas you cover**).
+- **Booking, quote and call-back requests:** "can someone come out?", "book an appointment", "I'd like a quote" or "call me back" start a short chat: name → phone → what they need → when. The request pops up on the owner's PC and appears under **Booking & call-back requests**, with a tap-to-call number. Customers are told it isn't booked until the business confirms.
+- When Shadow can't answer, it offers a call-back as well as saving the question for the owner.
+
+The example bakery (from `business.example.json`) is what you start with. Everything is saved in `data/business.json`.
 The business server is separate from your personal Shadow: customers can't see your chats, to-dos or memory.
 
 ## How the brain works (`shadow/rules.py`)
@@ -147,13 +173,14 @@ Rules near the top win. A rule can return `None` to pass the message on to the n
 shadow/
   rules.py         Shadow's brain: the if/else rules, plus learning from you
   learning.py      matching questions to what Shadow has learned
-  business.py      the business brain (hours, contact, prices, learned Q&As)
+  business.py      the business brain (emergencies, hours, area, prices, bookings, learned Q&As)
   business_web.py  the business server: customer chat + admin page
   planner.py       to-do list and reminders rules
   weather.py       weather rules (Open-Meteo)
   voice.py         talk out loud on your PC
   notify.py        PC pop-up notifications
   autostart.py     start Shadow when you log in
+templates/         ready-made business templates (plumber, electrician, vet, hair salon, ...)
   memory.py        conversation, facts and what Shadow learned, saved in data/memory.json
   brain.py         picks the brain and saves the conversation
   cli.py           terminal chat

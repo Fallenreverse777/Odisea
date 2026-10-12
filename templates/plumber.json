@@ -1,0 +1,103 @@
+{
+  "label": "Plumber",
+  "about": "Local plumbers for leaks, blockages, boilers, bathrooms and emergency call-outs.",
+  "hours": {
+    "monday": "08:00-18:00",
+    "tuesday": "08:00-18:00",
+    "wednesday": "08:00-18:00",
+    "thursday": "08:00-18:00",
+    "friday": "08:00-18:00",
+    "saturday": "09:00-13:00",
+    "sunday": "closed"
+  },
+  "service_area": "City centre and surrounding areas (up to 20 km)",
+  "bookings": true,
+  "booking_label": "Request a visit or quote",
+  "booking_question": "What's the problem? (e.g. leaking tap, blocked toilet, no hot water) Include your address or area.",
+  "items": [
+    {
+      "name": "Call-out / visit",
+      "price": "from 50 €",
+      "details": "Includes the first 30 minutes"
+    },
+    {
+      "name": "Hourly rate",
+      "price": "45 €/hour",
+      "details": "After the first 30 minutes"
+    },
+    {
+      "name": "Leak repair",
+      "price": "from 70 €",
+      "details": "Taps, pipes, cisterns"
+    },
+    {
+      "name": "Blocked drain or toilet",
+      "price": "from 80 €",
+      "details": ""
+    },
+    {
+      "name": "Tap replacement",
+      "price": "from 60 €",
+      "details": "Plus the cost of the tap"
+    },
+    {
+      "name": "Toilet replacement",
+      "price": "from 150 €",
+      "details": "Plus the cost of the toilet"
+    },
+    {
+      "name": "Water heater / boiler repair",
+      "price": "from 90 €",
+      "details": "Diagnosis included"
+    },
+    {
+      "name": "Emergency call-out",
+      "price": "from 100 €",
+      "details": "Evenings, nights and weekends"
+    }
+  ],
+  "faqs": [
+    {
+      "q": "Do you do emergency call-outs? | 24 hour plumber | can you come tonight | out of hours",
+      "a": "Yes, we do emergency call-outs evenings, nights and weekends. Call us and we'll get someone to you as soon as possible."
+    },
+    {
+      "q": "Do you give free quotes? | do you charge for quotes | free estimate",
+      "a": "Yes, quotes are free for bigger jobs like bathrooms and replacements. For repairs we charge the call-out fee, which includes the first 30 minutes of work."
+    },
+    {
+      "q": "Are you insured? | licensed | certified | qualified",
+      "a": "Yes, we're fully qualified and insured, and all our work is guaranteed."
+    },
+    {
+      "q": "Do you guarantee your work? | warranty | guarantee",
+      "a": "Yes, all our repairs come with a 12-month guarantee on labour."
+    },
+    {
+      "q": "How do I pay? | payment methods | card | cash | bizum | transfer",
+      "a": "You can pay by card, cash or bank transfer when the job is done."
+    },
+    {
+      "q": "How soon can you come? | earliest appointment | when can you come | today",
+      "a": "We can usually come the same or next working day. For emergencies, call us and we'll come as soon as possible."
+    },
+    {
+      "q": "Do you install bathrooms? | bathroom renovation | new shower | walk in shower",
+      "a": "Yes, we fit complete bathrooms and showers. We'll visit to measure and give you a free quote."
+    },
+    {
+      "q": "Where is my stopcock? | turn off the water | shut off valve | main valve",
+      "a": "The main stopcock is usually under the kitchen sink, near the water meter, or where the water pipe enters the building. Turn it clockwise to shut off the water."
+    }
+  ],
+  "emergencies": [
+    {
+      "keywords": "burst pipe | flooding | flood | water everywhere | water leaking through ceiling | water coming through ceiling | tuberia rota | inundacion",
+      "message": "Turn off the water at the main stopcock straight away (usually under the kitchen sink or by the water meter). If water is near sockets or light fittings, switch off the electricity at the fuse box if you can do it safely. Then call us now."
+    },
+    {
+      "keywords": "smell gas | gas smell | gas leak | huele a gas | fuga de gas",
+      "message": "If you smell gas: don't switch anything on or off, no flames or smoking. Open doors and windows, turn off the gas at the meter if you can do it safely, then leave the building and call the gas emergency line or your local emergency number from outside."
+    }
+  ]
+}

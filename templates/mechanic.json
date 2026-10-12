@@ -1,0 +1,91 @@
+{
+  "label": "Car mechanic / garage",
+  "about": "Independent garage for servicing, repairs, MOT/ITV preparation, tyres and diagnostics.",
+  "hours": {
+    "monday": "08:30-18:30",
+    "tuesday": "08:30-18:30",
+    "wednesday": "08:30-18:30",
+    "thursday": "08:30-18:30",
+    "friday": "08:30-18:30",
+    "saturday": "09:00-13:00",
+    "sunday": "closed"
+  },
+  "service_area": "",
+  "bookings": true,
+  "booking_label": "Book your car in",
+  "booking_question": "What's the car (make, model, year) and what do you need? (e.g. service, brakes, warning light on)",
+  "items": [
+    {
+      "name": "Oil and filter change",
+      "price": "from 60 €",
+      "details": ""
+    },
+    {
+      "name": "Full service",
+      "price": "from 180 €",
+      "details": "Oil, filters, checks, depending on the car"
+    },
+    {
+      "name": "Diagnostic check",
+      "price": "45 €",
+      "details": "Warning lights and fault codes"
+    },
+    {
+      "name": "Brake pads",
+      "price": "from 90 €",
+      "details": "Per axle, fitted"
+    },
+    {
+      "name": "Tyre fitting",
+      "price": "from 15 €",
+      "details": "Per tyre, plus the tyre"
+    },
+    {
+      "name": "Air conditioning recharge",
+      "price": "from 60 €",
+      "details": ""
+    },
+    {
+      "name": "Inspection (MOT/ITV) preparation",
+      "price": "from 40 €",
+      "details": ""
+    },
+    {
+      "name": "Hourly labour rate",
+      "price": "50 €/hour",
+      "details": ""
+    }
+  ],
+  "faqs": [
+    {
+      "q": "My engine light is on | check engine light | warning light",
+      "a": "A steady light means get it checked soon; a flashing light means stop driving as soon as it's safe. Book a diagnostic check and we'll read the fault codes."
+    },
+    {
+      "q": "Do you give a courtesy car? | replacement car | loan car",
+      "a": "We have a small number of courtesy cars. Ask when you book and we'll reserve one if it's free."
+    },
+    {
+      "q": "How long does a service take? | how long will it take | same day",
+      "a": "Most services and small repairs are done the same day if you drop the car off in the morning."
+    },
+    {
+      "q": "Do you use original parts? | genuine parts | quality parts",
+      "a": "We use original or equivalent-quality parts, and your manufacturer warranty stays valid."
+    },
+    {
+      "q": "Do you give quotes? | how much will it cost | do you charge for quotes | free estimate",
+      "a": "Yes. We'll check the car and give you a price before doing any work. Nothing is done without your OK."
+    },
+    {
+      "q": "How do I pay? | payment methods | card | cash",
+      "a": "Card, cash or bank transfer when you collect the car."
+    }
+  ],
+  "emergencies": [
+    {
+      "keywords": "broken down | broke down | breakdown | car broke down | car won't start on the motorway | accident | crash | car on fire | smoke from engine | averia en la carretera",
+      "message": "If you've broken down on the road: get the car as far off the road as you can, turn on the hazard lights, put on a reflective vest, and wait behind the barrier, away from traffic. If anyone is hurt or the car is on fire, call your local emergency number. Call your roadside assistance, then call us to arrange the repair."
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "label": "Handyman / repairs",
+  "about": "Small jobs and home repairs: furniture assembly, hanging shelves, painting, fixing doors and more.",
+  "hours": {
+    "monday": "08:00-18:00",
+    "tuesday": "08:00-18:00",
+    "wednesday": "08:00-18:00",
+    "thursday": "08:00-18:00",
+    "friday": "08:00-18:00",
+    "saturday": "09:00-13:00",
+    "sunday": "closed"
+  },
+  "service_area": "City centre and surrounding areas (up to 15 km)",
+  "bookings": true,
+  "booking_label": "Request a job or quote",
+  "booking_question": "What jobs do you need doing? A short list is fine. Include your address or area.",
+  "items": [
+    {
+      "name": "Hourly rate",
+      "price": "35 €/hour",
+      "details": "Minimum 1 hour"
+    },
+    {
+      "name": "Furniture assembly",
+      "price": "from 40 €",
+      "details": ""
+    },
+    {
+      "name": "Hanging shelves, pictures or TVs",
+      "price": "from 35 €",
+      "details": ""
+    },
+    {
+      "name": "Painting a room",
+      "price": "from 180 €",
+      "details": "Walls, materials extra"
+    },
+    {
+      "name": "Door repair or adjustment",
+      "price": "from 40 €",
+      "details": ""
+    },
+    {
+      "name": "Silicone and sealing",
+      "price": "from 40 €",
+      "details": "Bath, shower, kitchen"
+    }
+  ],
+  "faqs": [
+    {
+      "q": "Do you bring your own tools? | tools | materials",
+      "a": "Yes, we bring all the tools. Materials like paint or shelves can be bought by you or by us (charged at cost)."
+    },
+    {
+      "q": "Can you do several small jobs in one visit? | list of jobs | multiple jobs",
+      "a": "Yes, that's the best way to do it. Send us your list and we'll estimate how long it takes."
+    },
+    {
+      "q": "Do you give free quotes? | do you charge for quotes | free estimate",
+      "a": "Yes, send us a description or photos and we'll give you a free estimate."
+    },
+    {
+      "q": "Are you insured? | insurance",
+      "a": "Yes, we're fully insured."
+    },
+    {
+      "q": "How do I pay? | payment methods | card | cash",
+      "a": "Card, cash or bank transfer when the job is done."
+    }
+  ],
+  "emergencies": []
+}

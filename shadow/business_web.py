@@ -20,12 +20,21 @@ from pydantic import BaseModel, Field
 
 from . import business, config
 from .learning import parse_teaching
+from .notify import notify
 
 STATIC = Path(__file__).parent / "static"
 PORT = 8001
 
 app = FastAPI(title="Shadow for business")
-kb, brain = business.load()
+
+
+def new_request(request: dict) -> None:
+    """A customer asked to be booked in or called back: tell the owner on this PC."""
+    threading.Thread(target=notify, args=(f"New request from {request['name']} ({request['phone']}): {request['details']}",),
+                     daemon=True).start()
+
+
+kb, brain = business.load(on_request=new_request)
 
 
 def owner_only(request: Request, x_access_code: str = Header(default="")) -> None:
@@ -39,6 +48,11 @@ def owner_only(request: Request, x_access_code: str = Header(default="")) -> Non
 
 class Question(BaseModel):
     message: str = Field(max_length=500)
+    session: str = Field(default="", max_length=64)
+
+
+class Status(BaseModel):
+    status: str = Field(pattern="^(new|done|delete)$")
 
 
 class Lesson(BaseModel):
@@ -55,7 +69,10 @@ def customer_page():
 
 @app.get("/api/info")
 def info():
-    return {"name": kb.data["name"], "about": kb.data["about"]}
+    data = kb.data
+    return {"name": data["name"], "about": data["about"], "bookings": data.get("bookings", False),
+            "booking_label": data.get("booking_label", ""), "service_area": bool(data.get("service_area")),
+            "emergencies": bool(data.get("emergencies"))}
 
 
 @app.post("/api/ask")
@@ -63,7 +80,7 @@ def ask(body: Question):
     text = body.message.strip()
     if not text:
         raise HTTPException(status_code=400, detail="Empty message")
-    return {"reply": brain.answer(text)}
+    return {"reply": brain.answer(text, session=body.session)}
 
 
 # --- owner -------------------------------------------------------------------
@@ -80,11 +97,31 @@ def get_kb():
 
 @app.put("/api/admin/kb", dependencies=[Depends(owner_only)])
 def put_kb(data: dict):
-    # Unanswered questions are handled separately, so new ones aren't lost on save.
+    # Unanswered questions and requests are handled separately, so new ones aren't lost on save.
     with kb.lock:
         data["unanswered"] = kb.data.get("unanswered", [])
+        data["requests"] = kb.data.get("requests", [])
     kb.replace(data)
     return kb.data
+
+
+@app.get("/api/admin/templates", dependencies=[Depends(owner_only)])
+def templates():
+    return business.list_templates()
+
+
+@app.get("/api/admin/templates/{template_id}", dependencies=[Depends(owner_only)])
+def get_template(template_id: str):
+    tpl = business.template(template_id)
+    if tpl is None:
+        raise HTTPException(status_code=404, detail="No such template")
+    return tpl
+
+
+@app.post("/api/admin/requests/{request_id}", dependencies=[Depends(owner_only)])
+def set_request(request_id: str, body: Status):
+    kb.set_request_status(request_id, None if body.status == "delete" else body.status)
+    return {"ok": True}
 
 
 @app.get("/api/admin/links", dependencies=[Depends(owner_only)])

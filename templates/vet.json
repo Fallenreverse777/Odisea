@@ -1,0 +1,86 @@
+{
+  "label": "Veterinary clinic",
+  "about": "Caring veterinary clinic for dogs, cats and small pets: check-ups, vaccinations, surgery and emergencies.",
+  "hours": {
+    "monday": "09:00-20:00",
+    "tuesday": "09:00-20:00",
+    "wednesday": "09:00-20:00",
+    "thursday": "09:00-20:00",
+    "friday": "09:00-20:00",
+    "saturday": "10:00-14:00",
+    "sunday": "closed"
+  },
+  "service_area": "",
+  "bookings": true,
+  "booking_label": "Book an appointment",
+  "booking_question": "What's your pet's name and species, and what's the appointment for? (e.g. vaccination for Luna, our cat)",
+  "items": [
+    {
+      "name": "Consultation",
+      "price": "from 35 €",
+      "details": "General check-up or problem"
+    },
+    {
+      "name": "Vaccination",
+      "price": "from 30 €",
+      "details": "Includes a health check"
+    },
+    {
+      "name": "Microchip",
+      "price": "from 35 €",
+      "details": "Including registration"
+    },
+    {
+      "name": "Neutering / spaying",
+      "price": "from 120 €",
+      "details": "Depends on species and size"
+    },
+    {
+      "name": "Dental cleaning",
+      "price": "from 150 €",
+      "details": "Under anaesthetic"
+    },
+    {
+      "name": "Blood test",
+      "price": "from 60 €",
+      "details": ""
+    },
+    {
+      "name": "Emergency consultation",
+      "price": "from 70 €",
+      "details": "Out of hours"
+    }
+  ],
+  "faqs": [
+    {
+      "q": "Do you see emergencies? | emergency vet | out of hours | 24 hours",
+      "a": "Yes. During opening hours, come straight in or call us. Out of hours, call our emergency number."
+    },
+    {
+      "q": "What animals do you treat? | do you see rabbits | exotic | birds | reptiles",
+      "a": "We treat dogs, cats, rabbits and other small pets. For reptiles and birds, call us first and we'll tell you if we can help."
+    },
+    {
+      "q": "When should my puppy or kitten be vaccinated? | puppy vaccines | kitten vaccines | first vaccination",
+      "a": "Usually from 6 to 8 weeks old, with boosters a few weeks later. Book a first visit and we'll set up the full plan."
+    },
+    {
+      "q": "Do I need an appointment? | walk in",
+      "a": "Appointments are best so you don't wait, but we always see emergencies straight away."
+    },
+    {
+      "q": "Can I pay in instalments? | payment plan | pet insurance | insurance",
+      "a": "We accept most pet insurance and can talk about payment plans for bigger treatments. Ask us at reception."
+    },
+    {
+      "q": "Should I fast my pet before surgery? | before the operation | fasting",
+      "a": "Usually no food from 10 pm the night before; water is fine. We'll give you exact instructions when you book."
+    }
+  ],
+  "emergencies": [
+    {
+      "keywords": "ate chocolate | ate poison | poisoned | ate rat poison | ate grapes | ate raisins | ate xylitol | swallowed | not breathing | can't breathe | struggling to breathe | collapsed | seizure | fitting | hit by a car | bleeding | heatstroke | bloated | trying to vomit | envenenado",
+      "message": "This could be an emergency. Please call us now so we can tell you what to do and get ready for you. Don't try to make your pet vomit unless a vet tells you to. If they ate something, bring the packaging or a sample with you."
+    }
+  ]
+}

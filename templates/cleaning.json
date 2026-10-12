@@ -1,0 +1,76 @@
+{
+  "label": "Cleaning service",
+  "about": "Home and office cleaning: regular cleans, deep cleans and end-of-tenancy cleaning.",
+  "hours": {
+    "monday": "08:00-19:00",
+    "tuesday": "08:00-19:00",
+    "wednesday": "08:00-19:00",
+    "thursday": "08:00-19:00",
+    "friday": "08:00-19:00",
+    "saturday": "09:00-14:00",
+    "sunday": "closed"
+  },
+  "service_area": "City centre and surrounding areas",
+  "bookings": true,
+  "booking_label": "Book a clean",
+  "booking_question": "What kind of clean, and roughly how big is the place? (e.g. regular clean, 2-bedroom flat) Include your address or area.",
+  "items": [
+    {
+      "name": "Regular home cleaning",
+      "price": "from 15 €/hour",
+      "details": "Minimum 2 hours"
+    },
+    {
+      "name": "Deep clean",
+      "price": "from 120 €",
+      "details": "Depends on size"
+    },
+    {
+      "name": "End of tenancy clean",
+      "price": "from 150 €",
+      "details": "Depends on size"
+    },
+    {
+      "name": "Office cleaning",
+      "price": "quote",
+      "details": "Regular contracts available"
+    },
+    {
+      "name": "Oven cleaning",
+      "price": "from 50 €",
+      "details": ""
+    },
+    {
+      "name": "Window cleaning",
+      "price": "from 40 €",
+      "details": ""
+    }
+  ],
+  "faqs": [
+    {
+      "q": "Do you bring cleaning products? | supplies | equipment | products",
+      "a": "Yes, we bring all products and equipment. If you prefer we use your own, just tell us."
+    },
+    {
+      "q": "Do I need to be home? | keys | key holding",
+      "a": "No, many clients leave us a key. We keep keys safely and labelled without your address."
+    },
+    {
+      "q": "Are your cleaners insured and vetted? | trusted | background check | insurance",
+      "a": "Yes, all our cleaners are vetted and we're fully insured."
+    },
+    {
+      "q": "Can I have the same cleaner every time? | same person",
+      "a": "Yes, for regular cleans we always try to send the same cleaner."
+    },
+    {
+      "q": "What if I'm not happy? | guarantee | satisfaction",
+      "a": "Tell us within 24 hours and we'll come back and re-clean the area for free."
+    },
+    {
+      "q": "How do I cancel or change a booking? | cancel | reschedule",
+      "a": "Just let us know at least 24 hours before. Later cancellations may be charged."
+    }
+  ],
+  "emergencies": []
+}

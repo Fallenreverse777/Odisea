@@ -18,7 +18,7 @@ when where why how to of in on at for from by with about as and or but if so not
 please hi hello hey thanks thank just also too very really get got have has had
 el la los las un una unos unas de del al y o que en es son por para con se su sus lo le les mi tu
 hay como cuando donde quien cual muy mas ya si no pero porque hola gracias usted ustedes vosotros
-whats hows wheres whos im ive id dont doesnt isnt arent s t m ll re ve d
+whats hows wheres whos im ive id dont doesnt isnt arent s t m ll re ve d own need want like would could
 """.split())
 
 # Words that mean the same thing (or are spelled differently) count as one word.
@@ -34,6 +34,13 @@ SYNONYMS = {
     "payment": "pay", "paying": "pay", "kids": "children", "kid": "children", "child": "children",
     "dogs": "dog", "pets": "pet", "wifi": "internet", "wi": "internet",
     "song": "music", "songs": "music", "band": "music",
+    "hourly": "hour", "hours": "hour", "assemble": "assembly", "assembling": "assembly", "build": "made",
+    "fix": "repair", "fixing": "repair", "repairs": "repair", "mend": "repair",
+    "install": "installation", "installing": "installation", "fit": "installation", "fitting": "installation",
+    "haircut": "cut", "trim": "cut", "mens": "men", "womens": "women", "ladies": "women", "gents": "men",
+    "cleaning": "clean", "cleaner": "clean", "tyres": "tyre", "tires": "tyre", "tire": "tyre",
+    "vaccine": "vaccination", "vaccines": "vaccination", "jab": "vaccination", "shots": "vaccination",
+    "neuter": "neutering", "spay": "neutering", "castration": "neutering",
 }
 
 
