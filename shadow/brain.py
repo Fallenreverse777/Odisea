@@ -1,5 +1,7 @@
 """Shadow's front door: picks a brain and keeps the conversation in memory."""
 
+
+from __future__ import annotations
 from collections.abc import Iterator
 
 from . import config

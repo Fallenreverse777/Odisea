@@ -6,6 +6,8 @@ thing it has learned. Rare words (like "gluten") count more than common ones
 A learned question can list alternative phrasings separated by "|".
 """
 
+
+from __future__ import annotations
 import math
 import re
 import unicodedata

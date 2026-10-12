@@ -1,5 +1,7 @@
 """Weather rules, using Open-Meteo (free, no API key, no sign-up)."""
 
+
+from __future__ import annotations
 import json
 import urllib.parse
 import urllib.request

@@ -6,7 +6,7 @@ Shadow's brain is its own Python code, a loop of if/else rules. It runs **offlin
 
 ## Start Shadow (one click)
 
-1. Install Python 3.10+ from https://www.python.org/downloads/ (on Windows, tick **"Add Python to PATH"**).
+1. Install Python 3.9 or newer from https://www.python.org/downloads/ (on Windows, tick **"Add Python to PATH"**).
 2. Double-click the launcher in the `Odisea` folder:
    - **Windows:** `start-shadow.bat`
    - **Mac:** `start-shadow.command`
@@ -18,6 +18,23 @@ Keep the window open while you use Shadow.
 **On your phone:** open the "On your phone" address the launcher prints (e.g. `http://192.168.1.20:8000`) while on the same Wi-Fi.
 Tip: add it to your home screen so it opens like an app. Set `SHADOW_ACCESS_CODE` in `.env` so only you can use it.
 If the phone can't connect, allow Python through your PC's firewall.
+
+### Mac: if it doesn't start
+
+Open **Terminal** (Applications → Utilities), then:
+
+```bash
+cd ~/Odisea                 # or wherever you cloned it
+git checkout shadow-v1      # the code lives on this branch
+git pull
+./start-shadow.sh
+```
+
+- **"Shadow needs Python 3.9 or newer" / "command not found: python3"**: install Python from https://www.python.org/downloads/ (macOS installer), then run it again.
+- **"Permission denied"** (common after downloading a ZIP instead of cloning): run `chmod +x *.sh *.command` in the folder.
+- **"cannot be opened because it is from an unidentified developer"** when double-clicking: right-click `start-shadow.command` → **Open** → **Open**. Or run `xattr -dr com.apple.quarantine .` in the folder.
+- **Something else broke during setup**: delete the `.venv` folder (`rm -rf .venv`) and run `./start-shadow.sh` again.
+- On a Mac, use `python3` where instructions say `python`, and `.venv/bin/python` instead of `.venv\Scripts\python`.
 
 ## Start Shadow with your PC
 

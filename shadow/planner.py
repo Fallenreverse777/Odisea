@@ -1,5 +1,7 @@
 """To-do list and reminders for the rule-based brain."""
 
+
+from __future__ import annotations
 import re
 from datetime import datetime, timedelta
 

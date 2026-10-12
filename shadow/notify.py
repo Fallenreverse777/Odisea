@@ -1,5 +1,7 @@
 """Pop-up notifications on your PC (Windows, Mac, Linux). Best effort: never crashes Shadow."""
 
+
+from __future__ import annotations
 import platform
 import subprocess
 

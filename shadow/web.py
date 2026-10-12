@@ -7,6 +7,8 @@
 On your phone (same Wi-Fi), open the address it prints.
 """
 
+
+from __future__ import annotations
 import argparse
 import hmac
 import socket

@@ -9,6 +9,8 @@ Run these with the Python inside .venv (the launcher creates it), e.g.
     Mac/Linux:  .venv/bin/python -m shadow.autostart on
 """
 
+
+from __future__ import annotations
 import os
 import platform
 import subprocess

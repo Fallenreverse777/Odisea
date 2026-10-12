@@ -8,6 +8,8 @@ Speaking uses your computer's built-in voice (offline). Listening uses Google's
 free speech recognition, so it needs internet (no account or key).
 """
 
+
+from __future__ import annotations
 import argparse
 import re
 

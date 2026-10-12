@@ -10,6 +10,8 @@ How it works:
 To teach Shadow something new, write a function and add it to RULES.
 """
 
+
+from __future__ import annotations
 import ast
 import operator
 import random

@@ -1,5 +1,7 @@
 """Optional brain that uses the Claude API. Enable with SHADOW_BRAIN=claude."""
 
+
+from __future__ import annotations
 from collections.abc import Iterator
 
 import anthropic

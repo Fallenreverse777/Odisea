@@ -1,5 +1,7 @@
 """Simple JSON-file memory shared by every device that talks to Shadow."""
 
+
+from __future__ import annotations
 import json
 import threading
 from datetime import date, datetime, timezone

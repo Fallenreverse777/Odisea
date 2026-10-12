@@ -7,6 +7,8 @@ Customers use  http://<this-pc>:8001/        (no access to your personal Shadow)
 The owner uses http://localhost:8001/admin   (needs SHADOW_ACCESS_CODE from another device)
 """
 
+
+from __future__ import annotations
 import argparse
 import hmac
 import socket

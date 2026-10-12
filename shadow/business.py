@@ -16,6 +16,8 @@ How a customer question is answered:
 Templates for different trades live in templates/*.json.
 """
 
+
+from __future__ import annotations
 import json
 import random
 import re

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from datetime import datetime
 
 PERSONA = """You are Shadow, a personal companion. You're talking with one person, your user, \

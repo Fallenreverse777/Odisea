@@ -1,5 +1,7 @@
 """Chat with Shadow in your terminal:  python -m shadow.cli"""
 
+
+from __future__ import annotations
 import threading
 
 from .brain import Shadow
