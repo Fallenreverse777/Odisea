@@ -49,26 +49,22 @@ def call(name: str, memory: Memory, *args: Any, **kwargs: Any) -> str:
 @register("reflect")
 def reflect_today(memory: Memory) -> str:
     """Summarise what was learned or remembered today and store a daily note."""
-    from datetime import date, datetime
+    from datetime import date
 
     today = date.today()
     today_iso = today.isoformat()
 
-    # Gather today's user messages that look like learning signals
     msgs = memory.messages_on(today)
     user_msgs = [m["content"] for m in msgs if m["role"] == "user"]
 
     new_facts = []
     new_likes = []
-    new_taught = []
 
-    # Profile changes we can detect
     name = memory.get("name")
     likes = memory.get("likes", [])
     learned = memory.get("learned", [])
     facts = memory.facts
 
-    # Simple heuristics for what changed today
     for msg in user_msgs:
         low = msg.lower()
         if any(p in low for p in ("my name is", "call me", "i am called")):
@@ -78,8 +74,6 @@ def reflect_today(memory: Memory) -> str:
         if low.startswith(("remember that", "remember ")):
             new_facts.append(msg)
 
-    # Count how many things were taught today (approximation)
-    # We don't store timestamps on learned entries yet, so we just report totals
     summary_parts = []
     if name:
         summary_parts.append(f"Your name is {name}.")
@@ -93,7 +87,6 @@ def reflect_today(memory: Memory) -> str:
     if not summary_parts and not new_likes and not new_facts:
         return "Nothing new stood out today. Tell me something about yourself and I'll remember it."
 
-    # Store a daily reflection note
     reflections = memory.get("daily_reflections", {})
     reflections[today_iso] = {
         "summary": " ".join(summary_parts),
@@ -111,6 +104,20 @@ def reflect_today(memory: Memory) -> str:
     lines.append("- " + " ".join(summary_parts))
     lines.append("\nI've saved this as today's reflection.")
     return "\n".join(lines)
+
+
+@register("improve")
+def improve_self(memory: Memory) -> str:
+    """Analyse recent conversations and propose concrete improvements."""
+    from .improve import propose_improvements
+    return propose_improvements(memory)
+
+
+@register("proposals")
+def show_proposals(memory: Memory) -> str:
+    """Show the most recent improvement proposals."""
+    from .improve import show_last_proposals
+    return show_last_proposals(memory)
 
 
 @register("list_tools")
