@@ -75,7 +75,7 @@ def part_of_day() -> str:
 
 
 # ---------------------------------------------------------------------------
-# Safe calculator: only numbers and + - * / // % ** ( ). Never runs code.
+# Safe calculator
 # ---------------------------------------------------------------------------
 
 _OPS = {
@@ -103,13 +103,7 @@ def calculate(expr: str) -> float:
     return ev(ast.parse(expr, mode="eval").body)
 
 
-# ---------------------------------------------------------------------------
-# Rules. Each function gets the regex match, the message and the memory,
-# and returns Shadow's reply.
-# ---------------------------------------------------------------------------
-
 Rule = tuple[str, Callable[[re.Match, str, Memory], str]]
-
 
 FOLLOW_UPS = {
     "sad": "Last time we talked you were feeling down. How are you today?",
@@ -120,12 +114,20 @@ FOLLOW_UPS = {
 
 
 def do_reflect(m, text, mem):
-    """Trigger the daily reflection tool."""
     return shadow_tools.call("reflect", mem)
 
 
 def list_shadow_tools(m, text, mem):
     return shadow_tools.call("list_tools", mem)
+
+
+def do_improve(m, text, mem):
+    """Trigger continuous self-improvement analysis."""
+    return shadow_tools.call("improve", mem)
+
+
+def show_proposals(m, text, mem):
+    return shadow_tools.call("proposals", mem)
 
 
 def greet(m, text, mem):
@@ -138,7 +140,6 @@ def greet(m, text, mem):
         f"{name}! Welcome back.",
     ])]
 
-    # Follow up on a bad mood from an earlier day (only once).
     mood = mem.get("last_mood")
     if mood and mood["day"] < date.today().isoformat() and mood["mood"] in FOLLOW_UPS:
         lines.append(FOLLOW_UPS[mood["mood"]])
@@ -224,7 +225,7 @@ def list_likes(m, text, mem):
 
 def feelings(m, text, mem):
     words = set(re.findall(r"[a-z']+", text))
-    phrase = text  # for multi-word entries like "burnt out"
+    phrase = text
 
     def note(mood):
         mem.set("last_mood", {"mood": mood, "day": date.today().isoformat()})
@@ -247,7 +248,7 @@ def feelings(m, text, mem):
     if words & HAPPY:
         note("happy")
         return random.choice(["Glad to hear it.", "Good. Anything fun going on?", "Nice, love that for you."])
-    return None  # not a feeling we recognise: let the next rules try
+    return None
 
 
 def recap(m, text, mem):
@@ -261,7 +262,6 @@ def recap(m, text, mem):
         day = datetime.fromisoformat(earlier[-1]["time"]).astimezone().date()
 
     said = [msg["content"] for msg in mem.messages_on(day) if msg["role"] == "user"]
-    # Keep real conversation, not commands like "show my list" or "what time is it".
     meaningful = [t for t in said if matching_rule(t) in CHAT_RULES and len(t.split()) > 2][-5:]
     if not meaningful:
         return f"We didn't really talk {when}." if said else f"We didn't talk {when}."
@@ -337,6 +337,8 @@ def show_help(m, text, mem):
             "- teach me: 'when I say ..., say ...' or answer when I ask what to say\n"
             "- 'what have you learned?' / 'forget that'\n"
             "- 'reflect' or 'what did we learn today' (daily summary)\n"
+            "- 'improve yourself' / 'how can you get better' (self-improvement suggestions)\n"
+            "- 'show proposals' (last improvement ideas)\n"
             "- or just tell me how you're feeling")
 
 
@@ -366,6 +368,8 @@ def question(m, text, mem):
 RULES: list[Rule] = [
     (r"^(help|what can you do)\b", show_help),
     (r"^(reflect|what did we learn( today)?|daily summary|summarise today|summarize today)\b", do_reflect),
+    (r"^(improve yourself|how can you (get|become) better|suggest improvements|self[- ]improve)\b", do_improve),
+    (r"^(show|list|what are) (the )?(last )?proposals\b|^(proposals|improvement proposals)$", show_proposals),
     (r"^(list tools|what tools|show tools)\b", list_shadow_tools),
     *PLANNER_RULES,
     *WEATHER_RULES,
@@ -392,7 +396,6 @@ RULES: list[Rule] = [
     (r"\?$", question),
 ]
 
-# Rules that count as conversation (used by the recap). None = no rule matched.
 CHAT_RULES = {None, feelings, learn_like, remember_fact, i_feel, i_want, because, question}
 
 
@@ -405,18 +408,15 @@ def matching_rule(message: str):
 
 
 def clean(message: str) -> str:
-    # Phone keyboards often type curly apostrophes; treat them as normal ones.
     return " ".join(message.lower().replace("\u2019", "'").split())
 
 
-# Managing what you taught me: checked before anything you taught me.
 LEARNING_RULES: list[Rule] = [
     (r"\bwhat (have|did) you learn(ed|t)?\b|\bwhat have i taught you\b", list_learned),
     (r"^(forget|unlearn|undo) (that|it|the last one)$", forget_last_learned),
     (r"^(unlearn|forget what you learned about|forget what i taught you about) (?P<what>.+)", forget_learned),
 ]
 
-# General chat rules, tried only after everything else (including what you taught me).
 GENERIC_RULES = {i_feel, i_want, because, question}
 QUESTION = re.compile(r"\?$|^(what|whats|who|whos|whom|whose|where|wheres|when|why|how|hows|which|do|does|did|can|could|"
                       r"will|would|should|is|are|was|were|have|has|tell me)\b")
@@ -443,7 +443,6 @@ class RuleBrain:
         text = clean(user_text)
         mem = self.memory
 
-        # 1. You're teaching me directly: "when I say X, say Y".
         taught = parse_teaching(user_text)
         if taught:
             question, answer = taught
@@ -455,42 +454,36 @@ class RuleBrain:
                 mem.set("pending_teach", None)
                 return handler(match, text, mem)
 
-        # 2. You're answering my "what should I say?" from last time.
         pending = mem.get("pending_teach")
         if pending:
             mem.set("pending_teach", None)
             if re.fullmatch(r"(skip|never ?mind|no|nothing|forget it|cancel|dunno|i don'?t know)\W*", text):
                 return "No problem."
-            if matching_rule(user_text) in CHAT_RULES:  # not a command, so it's the answer
+            if matching_rule(user_text) in CHAT_RULES:
                 self.learn(pending, user_text.strip())
                 return f"Thanks, now I know! Next time you ask “{pending}”, I'll say that."
 
-        # 3. Something you taught me that matches closely: your answers win.
         learned = mem.get("learned", [])
         score, entry = best_match(learned, user_text)
         if entry and score >= 0.75:
             return entry["a"]
 
-        # 4. My built-in rules (except the general chat ones).
         for pattern, handler in RULES:
             if handler in GENERIC_RULES:
                 continue
             match = re.search(pattern, text)
             if match:
                 answer = handler(match, text, mem)
-                if answer:  # a rule can return None to pass to the next one
+                if answer:
                     return answer
 
-        # 5. Something you taught me that matches loosely.
         if entry and score >= 0.55:
             return entry["a"]
 
-        # 6. A question I can't answer: ask you to teach me.
         if QUESTION.search(text):
             mem.set("pending_teach", user_text.strip())
             return "I don't know how to answer that yet. What should I say when you ask me that? (Say 'skip' to leave it.)"
 
-        # 7. General chat.
         for pattern, handler in RULES:
             if handler in GENERIC_RULES and (match := re.search(pattern, text)):
                 return handler(match, text, mem)
