@@ -1,0 +1,82 @@
+[
+  {
+    "q": "hola | buenas | buen día | buen dia",
+    "a": "Hola. ¿Cómo estás hoy?"
+  },
+  {
+    "q": "cómo estás | como estas | qué tal | que tal",
+    "a": "Todo bien por aquí. ¿Y tú?"
+  },
+  {
+    "q": "buenos días | buenos dias",
+    "a": "Buenos días. ¿Listo para empezar el día?"
+  },
+  {
+    "q": "buenas noches",
+    "a": "Buenas noches. Descansa bien."
+  },
+  {
+    "q": "gracias | muchas gracias",
+    "a": "De nada. Cuando quieras."
+  },
+  {
+    "q": "por favor",
+    "a": "Claro, dime."
+  },
+  {
+    "q": "estoy cansado | estoy cansada | estoy agotado | estoy agotada",
+    "a": "Se te nota el cansancio. ¿Has podido descansar algo?"
+  },
+  {
+    "q": "estoy estresado | estoy estresada | estoy abrumado | estoy abrumada",
+    "a": "El estrés pesa. ¿Qué es lo que más te está cargando ahora mismo?"
+  },
+  {
+    "q": "estoy triste | me siento mal",
+    "a": "Siento que estés así. ¿Quieres hablar de ello o prefieres distraerte un rato?"
+  },
+  {
+    "q": "estoy aburrido | estoy aburrida",
+    "a": "¿Quieres que te proponga algo, te haga una pregunta o simplemente charlemos?"
+  },
+  {
+    "q": "no sé qué hacer | no se que hacer | estoy perdido | estoy perdida",
+    "a": "Cuando no se ve el camino completo, basta con el siguiente paso. ¿Cuál es la decisión más pequeña que puedes tomar ahora?"
+  },
+  {
+    "q": "ayúdame | ayudame | necesito ayuda",
+    "a": "Claro. Cuéntame qué pasa y lo vemos juntos."
+  },
+  {
+    "q": "qué puedes hacer | que puedes hacer | para qué sirves",
+    "a": "Puedo recordar cosas, ayudarte con listas y recordatorios, aprender de ti y acompañarte. Escribe 'help' si quieres la lista completa."
+  },
+  {
+    "q": "quién eres | quien eres | qué eres | que eres",
+    "a": "Soy Shadow, tu compañero. Vivo en tu ordenador y voy aprendiendo contigo."
+  },
+  {
+    "q": "te quiero | te quiero mucho",
+    "a": "Gracias por decirlo. Aquí estoy."
+  },
+  {
+    "q": "adiós | adios | hasta luego | nos vemos",
+    "a": "Hasta luego. Aquí estaré cuando vuelvas."
+  },
+  {
+    "q": "qué hora es | que hora es",
+    "a": "Déjame ver… son alrededor de las " 
+  },
+  {
+    "q": "cuéntame un chiste | cuentame un chiste | dime un chiste",
+    "a": "¿Por qué los programadores confunden Halloween con Navidad? Porque OCT 31 = DEC 25."
+  },
+  {
+    "q": "estoy motivado | estoy motivada",
+    "a": "Buen momento para aprovechar. ¿En qué vas a usar esa energía?"
+  },
+  {
+    "q": "no tengo ganas | no me apetece hacer nada",
+    "a": "A veces las ganas llegan después de empezar, no antes. ¿Hay algo pequeño que puedas hacer aunque no te apetezca?"
+  }
+]
