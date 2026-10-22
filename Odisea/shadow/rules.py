@@ -24,6 +24,7 @@ from .learning import add_or_update, best_match, parse_teaching
 from .memory import Memory
 from .planner import PLANNER_RULES, pop_due_reminders
 from .weather import WEATHER_RULES
+from . import tools as shadow_tools
 
 # ---------------------------------------------------------------------------
 # Word lists
@@ -116,6 +117,15 @@ FOLLOW_UPS = {
     "stressed": "Last time you were stressed. Is it any better?",
     "angry": "Last time something was bugging you. Did it sort itself out?",
 }
+
+
+def do_reflect(m, text, mem):
+    """Trigger the daily reflection tool."""
+    return shadow_tools.call("reflect", mem)
+
+
+def list_shadow_tools(m, text, mem):
+    return shadow_tools.call("list_tools", mem)
 
 
 def greet(m, text, mem):
@@ -326,6 +336,7 @@ def show_help(m, text, mem):
             "- 'tell me a joke'\n"
             "- teach me: 'when I say ..., say ...' or answer when I ask what to say\n"
             "- 'what have you learned?' / 'forget that'\n"
+            "- 'reflect' or 'what did we learn today' (daily summary)\n"
             "- or just tell me how you're feeling")
 
 
@@ -354,6 +365,8 @@ def question(m, text, mem):
 
 RULES: list[Rule] = [
     (r"^(help|what can you do)\b", show_help),
+    (r"^(reflect|what did we learn( today)?|daily summary|summarise today|summarize today)\b", do_reflect),
+    (r"^(list tools|what tools|show tools)\b", list_shadow_tools),
     *PLANNER_RULES,
     *WEATHER_RULES,
     (r"\bwhat did (we|i) (talk about|discuss|say|tell you)( about)? (?P<when>yesterday|today|last time)\b", recap),
