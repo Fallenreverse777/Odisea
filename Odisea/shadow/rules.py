@@ -44,7 +44,6 @@ JOKES = [
     "A SQL query walks into a bar, goes up to two tables and asks: 'Can I join you?'",
 ]
 
-# Swapped when Shadow echoes your words back ("I need my keys" -> "you need your keys").
 REFLECTIONS = {
     "i": "you", "me": "you", "my": "your", "mine": "yours", "myself": "yourself",
     "am": "are", "i'm": "you're", "i've": "you've", "i'll": "you'll", "i'd": "you'd",
@@ -73,10 +72,6 @@ def part_of_day() -> str:
         return "afternoon"
     return "evening"
 
-
-# ---------------------------------------------------------------------------
-# Safe calculator
-# ---------------------------------------------------------------------------
 
 _OPS = {
     ast.Add: operator.add, ast.Sub: operator.sub, ast.Mult: operator.mul,
@@ -122,12 +117,21 @@ def list_shadow_tools(m, text, mem):
 
 
 def do_improve(m, text, mem):
-    """Trigger continuous self-improvement analysis."""
     return shadow_tools.call("improve", mem)
 
 
 def show_proposals(m, text, mem):
     return shadow_tools.call("proposals", mem)
+
+
+def do_ingest(m, text, mem):
+    """Ingest the auto-patterns offered by the last improve yourself."""
+    return shadow_tools.call("ingest", mem)
+
+
+def do_load_patterns(m, text, mem):
+    """Load every *.json file from data/patterns/."""
+    return shadow_tools.call("load_patterns", mem)
 
 
 def greet(m, text, mem):
@@ -337,8 +341,10 @@ def show_help(m, text, mem):
             "- teach me: 'when I say ..., say ...' or answer when I ask what to say\n"
             "- 'what have you learned?' / 'forget that'\n"
             "- 'reflect' or 'what did we learn today' (daily summary)\n"
-            "- 'improve yourself' / 'how can you get better' (self-improvement suggestions)\n"
+            "- 'improve yourself' / 'how can you get better' (self-improvement)\n"
             "- 'show proposals' (last improvement ideas)\n"
+            "- 'load patterns' (absorb JSON files from data/patterns/)\n"
+            "- 'ingest them' (accept auto-patterns from improve yourself)\n"
             "- or just tell me how you're feeling")
 
 
@@ -370,6 +376,8 @@ RULES: list[Rule] = [
     (r"^(reflect|what did we learn( today)?|daily summary|summarise today|summarize today)\b", do_reflect),
     (r"^(improve yourself|how can you (get|become) better|suggest improvements|self[- ]improve)\b", do_improve),
     (r"^(show|list|what are) (the )?(last )?proposals\b|^(proposals|improvement proposals)$", show_proposals),
+    (r"^(yes,? )?ingest (them|those|the patterns|it)$|^(ingest them|accept patterns)$", do_ingest),
+    (r"^(load|reload|ingest) patterns?\b|^(load all patterns)$", do_load_patterns),
     (r"^(list tools|what tools|show tools)\b", list_shadow_tools),
     *PLANNER_RULES,
     *WEATHER_RULES,
