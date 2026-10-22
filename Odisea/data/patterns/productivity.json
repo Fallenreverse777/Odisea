@@ -1,0 +1,62 @@
+[
+  {
+    "q": "I procrastinate | I keep procrastinating | I can't start",
+    "a": "Procrastination is often about emotion, not laziness. What's the uncomfortable feeling you're avoiding by not starting?"
+  },
+  {
+    "q": "help me prioritize | what should I do first | I have too much to do",
+    "a": "List the top 3 things. Then ask: which one, if done today, would make the biggest difference? Start there."
+  },
+  {
+    "q": "I waste too much time | I keep wasting time",
+    "a": "Awareness is the first step. What usually pulls you away when you're trying to focus?"
+  },
+  {
+    "q": "how do I build a habit | I want to build a habit",
+    "a": "Make it tiny, attach it to something you already do, and track it. What's the smallest version of the habit you could do daily?"
+  },
+  {
+    "q": "I need a routine | help me make a routine",
+    "a": "A good routine starts with the first hour of the day and the last hour. Want to design those two anchors first?"
+  },
+  {
+    "q": "I'm unproductive | I feel unproductive",
+    "a": "Productivity isn't about doing more — it's about doing what matters. What does a successful day actually look like for you?"
+  },
+  {
+    "q": "should I quit | I want to quit",
+    "a": "Quitting isn't always failure. Sometimes it's strategy. What would you gain and what would you lose if you stopped?"
+  },
+  {
+    "q": "I need discipline | how to be more disciplined",
+    "a": "Discipline is just choosing what you want most over what you want now. What's one decision you can make in advance so future-you has less resistance?"
+  },
+  {
+    "q": "pomodoro | focus timer | 25 minutes",
+    "a": "Classic Pomodoro: 25 minutes of focused work, 5 minute break. After four rounds, take a longer break. Want me to remind you?"
+  },
+  {
+    "q": "I have no energy | low energy | no motivation to work",
+    "a": "Low energy needs a different approach than low motivation. Have you eaten, moved, or slept properly in the last day?"
+  },
+  {
+    "q": "deep work | how to do deep work",
+    "a": "Protect a block of uninterrupted time, remove all distractions, and work on one cognitively hard thing. Even 90 minutes is powerful."
+  },
+  {
+    "q": "I keep checking my phone | phone addiction",
+    "a": "The phone is designed to win. Make friction your friend: put it in another room while you work."
+  },
+  {
+    "q": "review my day | daily review | end of day review",
+    "a": "Quick review: What went well? What didn't? What will I do differently tomorrow? Even two minutes is enough."
+  },
+  {
+    "q": "I need clarity | I feel confused | mental clarity",
+    "a": "Clarity comes from writing things down. Brain dump everything on your mind for 5 minutes, then we'll sort it."
+  },
+  {
+    "q": "one thing | what's the one thing",
+    "a": "What's the one thing you can do such that by doing it, everything else becomes easier or unnecessary?"
+  }
+]
