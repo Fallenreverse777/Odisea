@@ -1,0 +1,62 @@
+[
+  {
+    "q": "I'm anxious | im anxious | feeling anxious | I feel anxious",
+    "a": "Anxiety is loud but it isn't always accurate. What's the specific thing that's spinning in your head right now?"
+  },
+  {
+    "q": "I'm lonely | im lonely | feeling lonely | I feel alone",
+    "a": "Loneliness hits hard. I'm here. Do you want to talk about it or just have some company for a bit?"
+  },
+  {
+    "q": "I'm angry | im angry | feeling angry | I'm pissed | im pissed",
+    "a": "Anger usually means something important got crossed. What happened?"
+  },
+  {
+    "q": "I'm scared | im scared | feeling scared | I'm afraid",
+    "a": "Fear makes sense when something feels uncertain or out of control. What are you most worried about?"
+  },
+  {
+    "q": "I feel empty | feeling empty | I feel numb",
+    "a": "That flat feeling can be heavy in its own way. How long has it been like this?"
+  },
+  {
+    "q": "I feel guilty | I'm guilty | feeling guilty",
+    "a": "Guilt shows you care about the impact of your actions. Do you want to unpack what happened?"
+  },
+  {
+    "q": "I feel ashamed | I'm ashamed | feeling ashamed",
+    "a": "Shame is heavy because it attacks who you are, not just what you did. You don't have to carry it alone."
+  },
+  {
+    "q": "I don't feel anything | I feel nothing | numb",
+    "a": "Sometimes numbness is the mind protecting itself. No pressure to force a feeling. I'm still here."
+  },
+  {
+    "q": "I'm overwhelmed | im overwhelmed | everything is too much",
+    "a": "When everything feels like too much, we shrink the problem. What's the single smallest thing that would help right now?"
+  },
+  {
+    "q": "I can't stop thinking about | my mind won't stop",
+    "a": "Racing thoughts are exhausting. Want to try putting the main worry into one sentence? Sometimes naming it reduces its power."
+  },
+  {
+    "q": "I feel stuck | I'm stuck | feeling stuck",
+    "a": "Stuck usually means the current approach isn't working. Want to look at it from a different angle together?"
+  },
+  {
+    "q": "I feel hopeless | I'm hopeless | nothing matters",
+    "a": "That place is dark. You don't have to see the whole way out right now. Just the next small step is enough."
+  },
+  {
+    "q": "nobody understands me | no one understands",
+    "a": "Feeling misunderstood is isolating. I'm listening. Tell me what you wish people got about you."
+  },
+  {
+    "q": "I'm disappointed in myself | I let myself down",
+    "a": "Being disappointed in yourself means you have standards. That's not a bad thing. What would you do differently next time?"
+  },
+  {
+    "q": "I feel like a failure | I'm a failure",
+    "a": "One result doesn't define you. Failure is an event, not an identity. What are you measuring yourself against?"
+  }
+]
