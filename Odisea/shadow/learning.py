@@ -24,25 +24,55 @@ whats hows wheres whos im ive id dont doesnt isnt arent s t m ll re ve d own nee
 """.split())
 
 # Words that mean the same thing (or are spelled differently) count as one word.
+# Expanded for better matching of common user variations.
 SYNONYMS = {
+    # spelling / regional
     "favourite": "favorite", "fav": "favorite", "fave": "favorite",
-    "film": "movie", "films": "movie", "movies": "movie",
     "colour": "color", "colours": "color", "colors": "color",
-    "created": "made", "create": "made", "creator": "made", "built": "made", "build": "made",
-    "make": "made", "wrote": "made", "programmed": "made",
-    "cost": "price", "costs": "price", "prices": "price", "fee": "price", "fees": "price", "charge": "price",
-    "delivery": "deliver", "delivering": "deliver", "deliveries": "deliver", "ship": "deliver", "shipping": "deliver",
-    "booking": "book", "reserve": "book", "reservation": "book", "appointment": "book",
-    "payment": "pay", "paying": "pay", "kids": "children", "kid": "children", "child": "children",
-    "dogs": "dog", "pets": "pet", "wifi": "internet", "wi": "internet",
-    "song": "music", "songs": "music", "band": "music",
-    "hourly": "hour", "hours": "hour", "assemble": "assembly", "assembling": "assembly", "build": "made",
+    "theatre": "theater", "centre": "center", "licence": "license",
+    # media
+    "film": "movie", "films": "movie", "movies": "movie",
+    "song": "music", "songs": "music", "band": "music", "tune": "music",
+    # creation
+    "created": "made", "create": "made", "creator": "made", "built": "made",
+    "build": "made", "make": "made", "wrote": "made", "programmed": "made",
+    "designed": "made", "developed": "made",
+    # money / commerce
+    "cost": "price", "costs": "price", "prices": "price", "fee": "price",
+    "fees": "price", "charge": "price", "charges": "price", "rate": "price",
+    "payment": "pay", "paying": "pay",
+    # logistics
+    "delivery": "deliver", "delivering": "deliver", "deliveries": "deliver",
+    "ship": "deliver", "shipping": "deliver", "send": "deliver",
+    # booking
+    "booking": "book", "reserve": "book", "reservation": "book",
+    "appointment": "book", "schedule": "book",
+    # people
+    "kids": "children", "kid": "children", "child": "children",
+    "dogs": "dog", "pets": "pet", "cats": "cat",
+    # tech
+    "wifi": "internet", "wi": "internet", "broadband": "internet",
+    # time / service
+    "hourly": "hour", "hours": "hour",
+    "assemble": "assembly", "assembling": "assembly",
     "fix": "repair", "fixing": "repair", "repairs": "repair", "mend": "repair",
-    "install": "installation", "installing": "installation", "fit": "installation", "fitting": "installation",
-    "haircut": "cut", "trim": "cut", "mens": "men", "womens": "women", "ladies": "women", "gents": "men",
-    "cleaning": "clean", "cleaner": "clean", "tyres": "tyre", "tires": "tyre", "tire": "tyre",
-    "vaccine": "vaccination", "vaccines": "vaccination", "jab": "vaccination", "shots": "vaccination",
+    "fixing": "repair", "broken": "repair",
+    "install": "installation", "installing": "installation",
+    "fit": "installation", "fitting": "installation",
+    # personal care
+    "haircut": "cut", "trim": "cut", "mens": "men", "womens": "women",
+    "ladies": "women", "gents": "men",
+    "cleaning": "clean", "cleaner": "clean",
+    # auto
+    "tyres": "tyre", "tires": "tyre", "tire": "tyre",
+    # medical / vet
+    "vaccine": "vaccination", "vaccines": "vaccination",
+    "jab": "vaccination", "shots": "vaccination", "shot": "vaccination",
     "neuter": "neutering", "spay": "neutering", "castration": "neutering",
+    # common verbs / states
+    "open": "opening", "opens": "opening", "opened": "opening",
+    "close": "closing", "closes": "closing", "closed": "closing",
+    "available": "availability", "avail": "availability",
 }
 
 
@@ -58,6 +88,8 @@ def stem(word: str) -> str:
         return word[:-3]
     if word.endswith(("ches", "shes", "sses", "xes")):
         return word[:-2]            # boxes -> box, dishes -> dish
+    if len(word) > 4 and word.endswith("ies"):
+        return word[:-3] + "y"      # cities -> city
     if len(word) > 3 and word.endswith("s") and not word.endswith("ss"):
         return word[:-1]            # prices -> price, baguettes -> baguette
     return word
@@ -89,7 +121,7 @@ def best_match(entries: list[dict], question: str) -> tuple[float, dict | None]:
         if not words or not shared:
             continue
         # How much of the learned question was covered, and how much of the new one was explained.
-        coverage = sum(idf[w] for w in shared) / sum(idf[w] for w in words)
+        coverage = sum(idf.get(w, 1.0) for w in shared) / max(sum(idf.get(w, 1.0) for w in words), 1e-9)
         precision = len(shared) / len(asked)
         # Both must be high: "capital of Spain" must not match "capital of France".
         score = coverage * (0.5 + 0.5 * precision)
