@@ -120,6 +120,20 @@ def show_proposals(memory: Memory) -> str:
     return show_last_proposals(memory)
 
 
+@register("ingest")
+def ingest_pending(memory: Memory) -> str:
+    """Ingest the auto-patterns offered by the last 'improve yourself'."""
+    from .improve import ingest_pending_auto_patterns
+    return ingest_pending_auto_patterns(memory)
+
+
+@register("load_patterns")
+def load_patterns(memory: Memory) -> str:
+    """Load every *.json pattern file from data/patterns/."""
+    from .improve import load_patterns_from_disk
+    return load_patterns_from_disk(memory)
+
+
 @register("list_tools")
 def list_available(memory: Memory) -> str:
     tools = list_tools()
