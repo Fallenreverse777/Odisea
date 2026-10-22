@@ -1,0 +1,30 @@
+{
+  "name": "Panadería Luna",
+  "about": "A family bakery making fresh bread, pastries and cakes every morning since 1998.",
+  "address": "Calle Mayor 12, Madrid",
+  "phone": "+34 600 123 456",
+  "email": "hola@panaderialuna.es",
+  "website": "https://panaderialuna.es",
+  "hours": {
+    "monday": "08:00-14:00, 17:00-20:30",
+    "tuesday": "08:00-14:00, 17:00-20:30",
+    "wednesday": "08:00-14:00, 17:00-20:30",
+    "thursday": "08:00-14:00, 17:00-20:30",
+    "friday": "08:00-14:00, 17:00-20:30",
+    "saturday": "09:00-14:00",
+    "sunday": "closed"
+  },
+  "items": [
+    {"name": "Baguette", "price": "1.20 €", "details": "Baked fresh every morning"},
+    {"name": "Croissant", "price": "1.50 €", "details": "Butter croissant"},
+    {"name": "Sourdough loaf", "price": "4.50 €", "details": "48-hour fermentation"},
+    {"name": "Birthday cake", "price": "from 25 €", "details": "Order at least 2 days ahead"}
+  ],
+  "faqs": [
+    {"q": "Do you take card? | can I pay by card | payment methods | contactless", "a": "Yes, we take cards and contactless payments, and cash too."},
+    {"q": "Do you have gluten free bread? | gluten free | celiac | coeliac", "a": "We bake a gluten-free loaf on Tuesdays and Fridays. It's made in a shared kitchen, so it isn't safe for severe allergies."},
+    {"q": "Can I order a cake? | custom cake | order a birthday cake", "a": "Yes! Call us or come in at least 2 days before. Cakes start at 25 €."},
+    {"q": "Do you deliver? | delivery | home delivery", "a": "We don't deliver, but you can call ahead and we'll have your order ready to pick up."}
+  ],
+  "unanswered": []
+}

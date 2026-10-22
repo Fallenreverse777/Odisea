@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shadow admin</title>
+<style>
+  :root { --brand:#1f6f5c; --bg:#f6f4ef; --card:#fff; --text:#1d2420; --muted:#6b736e; --line:#e4e1d8; --warn:#b4541f; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font:15px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  main { max-width:860px; margin:0 auto; padding:16px 16px 90px; }
+  h1 { font-size:22px; margin:8px 0 4px; }
+  .sub { color:var(--muted); margin:0 0 16px; }
+  .sub a { color:var(--brand); }
+  section { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; margin-bottom:16px; }
+  h2 { font-size:17px; margin:0 0 4px; display:flex; align-items:center; gap:8px; }
+  .hint { color:var(--muted); font-size:13px; margin:0 0 12px; }
+  .badge { background:var(--warn); color:#fff; border-radius:10px; padding:1px 8px; font-size:13px; }
+  .badge:empty { display:none; }
+  .req { padding:12px 0; border-top:1px solid var(--line); display:grid; grid-template-columns:1fr auto; gap:8px; }
+  .req:first-of-type { border-top:0; }
+  .req.done { opacity:.55; }
+  .req .who { font-weight:600; }
+  .req .who a { color:var(--brand); }
+  .req .meta { color:var(--muted); font-size:13px; }
+  .req .actions { display:flex; gap:6px; align-items:start; }
+  .row.emerg { grid-template-columns:1fr 1.4fr auto; }
+  .check { display:flex; align-items:center; gap:8px; margin-top:12px; color:var(--text); font-size:15px; }
+  .check input { width:auto; }
+  select { border:1px solid var(--line); border-radius:8px; padding:8px 10px; font:inherit; background:#fff; }
+  label { display:block; font-size:13px; color:var(--muted); margin:10px 0 4px; }
+  input, textarea { width:100%; border:1px solid var(--line); border-radius:8px; padding:8px 10px; font:inherit; background:#fff; color:var(--text); }
+  textarea { resize:vertical; min-height:60px; }
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:0 12px; }
+  .row { display:grid; gap:8px; align-items:start; margin-bottom:8px; }
+  .row.item { grid-template-columns:2fr 1fr 2fr auto; }
+  .row.faq { grid-template-columns:1fr 1fr auto; }
+  .row.hours { grid-template-columns:110px 1fr; align-items:center; }
+  button { border:1px solid var(--brand); background:transparent; color:var(--brand); border-radius:8px; padding:7px 12px; font:inherit; cursor:pointer; }
+  button.primary { background:var(--brand); color:#fff; }
+  button.x { border-color:var(--line); color:var(--muted); padding:7px 10px; }
+  .q { padding:12px 0; border-top:1px solid var(--line); }
+  .q:first-of-type { border-top:0; }
+  .q strong { display:block; margin-bottom:6px; }
+  .q .count { color:var(--muted); font-size:13px; font-weight:normal; }
+  .q .actions { display:flex; gap:8px; margin-top:6px; }
+  #chat { height:240px; overflow-y:auto; border:1px solid var(--line); border-radius:8px; padding:10px; background:var(--bg);
+    display:flex; flex-direction:column; gap:8px; margin-bottom:8px; }
+  .msg { max-width:85%; padding:8px 12px; border-radius:14px; white-space:pre-wrap; }
+  .me { align-self:flex-end; background:var(--brand); color:#fff; }
+  .bot { align-self:flex-start; background:#fff; border:1px solid var(--line); }
+  .inline { display:flex; gap:8px; }
+  .inline input { flex:1; }
+  #savebar { position:fixed; left:0; right:0; bottom:0; background:var(--card); border-top:1px solid var(--line); padding:12px 16px; }
+  #savebar div { max-width:860px; margin:0 auto; display:flex; align-items:center; gap:12px; }
+  #status { color:var(--muted); font-size:14px; }
+  @media (max-width:640px) {
+    .grid, .row.item, .row.faq, .row.emerg { grid-template-columns:1fr; }
+    .row { border-bottom:1px dashed var(--line); padding-bottom:8px; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1 id="title">Shadow admin</h1>
+  <p class="sub">Teach Shadow about your business. Customers chat at <a id="custLink" href="/" target="_blank">the customer page</a>.</p>
+
+  <section>
+    <h2>Type of business</h2>
+    <p class="hint">Start from a ready-made template for your trade: typical services, prices, customer questions and emergency advice.
+      It replaces those sections on this page (your name, contact details and address stay). Review it, change the prices, then <strong>Save</strong>.</p>
+    <div class="inline">
+      <select id="templatePick"><option value="">Choose your trade…</option></select>
+      <button type="button" id="useTemplate">Use template</button>
+    </div>
+    <p class="hint" id="currentType" style="margin-top:8px"></p>
+  </section>
+
+  <section>
+    <h2>Booking &amp; call-back requests <span id="reqCount" class="badge"></span></h2>
+    <p class="hint">Customers who asked to book, get a quote or be called back. Call them to confirm.</p>
+    <div id="requests"></div>
+  </section>
+
+  <section>
+    <h2>Teach &amp; test</h2>
+    <p class="hint">Ask something as if you were a customer. If Shadow doesn't know, type the answer and it learns it.
+      You can also write: <em>if someone asks "do you have parking?" say "Yes, behind the shop."</em></p>
+    <div id="chat"></div>
+    <form id="chatForm" class="inline">
+      <input id="chatInput" placeholder="Try a customer question, or teach Shadow…" maxlength="500" autocomplete="off">
+      <button class="primary">Send</button>
+    </form>
+  </section>
+
+  <section>
+    <h2>Questions Shadow couldn't answer <span id="unCount" class="badge"></span></h2>
+    <p class="hint">Customers asked these. Write an answer and Shadow will know it from now on (including similar wordings).</p>
+    <div id="unanswered"></div>
+  </section>
+
+  <section>
+    <h2>Business details</h2>
+    <div class="grid">
+      <div><label>Name</label><input data-field="name"></div>
+      <div><label>Phone</label><input data-field="phone"></div>
+      <div><label>Email</label><input data-field="email"></div>
+      <div><label>Website</label><input data-field="website"></div>
+    </div>
+    <label>Address</label><input data-field="address">
+    <label>About (one or two sentences)</label><textarea data-field="about"></textarea>
+  </section>
+
+  <section>
+    <h2>Bookings &amp; service area</h2>
+    <label class="check"><input type="checkbox" id="bookingsOn"> Let customers request a booking, quote or call-back in the chat</label>
+    <div class="grid">
+      <div><label>Button text</label><input data-field="booking_label" placeholder="Book an appointment"></div>
+      <div><label>Areas you cover (leave empty if customers come to you)</label><input data-field="service_area" placeholder="City centre, North, Getafe…"></div>
+    </div>
+    <label>What Shadow asks about the job</label><input data-field="booking_question" placeholder="What do you need?">
+  </section>
+
+  <section>
+    <h2>Emergencies</h2>
+    <p class="hint">When a customer's message contains all the words of one of these phrases, Shadow immediately replies with your message and phone number.
+      Separate phrases with <strong>|</strong>. Keep the advice simple and safe, and point people to the emergency number when lives may be at risk.</p>
+    <label>Emergency phone (if different from your normal phone)</label><input data-field="emergency_phone">
+    <div id="emergencies" style="margin-top:12px"></div>
+    <button type="button" id="addEmergency">+ Add emergency</button>
+  </section>
+
+  <section>
+    <h2>Opening hours</h2>
+    <p class="hint">Like <em>09:00-14:00</em>, or two slots: <em>09:00-14:00, 17:00-20:00</em>. Write <em>closed</em> for days off.</p>
+    <div id="hours"></div>
+  </section>
+
+  <section>
+    <h2>Products, services &amp; prices</h2>
+    <div id="items"></div>
+    <button type="button" id="addItem">+ Add product or service</button>
+  </section>
+
+  <section>
+    <h2>Questions &amp; answers</h2>
+    <p class="hint">Everything Shadow has learned. Add other ways people might ask, separated by <strong>|</strong>, e.g.
+      <em>Do you deliver? | home delivery | can you bring it to me</em></p>
+    <div id="faqs"></div>
+    <button type="button" id="addFaq">+ Add question</button>
+  </section>
+</main>
+
+<div id="savebar"><div><button class="primary" id="save">Save changes</button><span id="status"></span></div></div>
+
+<script>
+const DAYS = ["monday","tuesday","wednesday","thursday","friday","saturday","sunday"];
+let state = null;
+let dirty = false;
+
+function getCode() { try { return localStorage.getItem("shadowCode") || ""; } catch { return ""; } }
+function setCode(c) { try { localStorage.setItem("shadowCode", c); } catch {} }
+
+async function api(path, opts = {}) {
+  opts.headers = { "Content-Type": "application/json", ...(opts.headers || {}), "X-Access-Code": getCode() };
+  let res = await fetch(path, opts);
+  if (res.status === 401) {
+    const code = prompt("Access code:");
+    if (code === null) throw new Error("No access code");
+    setCode(code);
+    opts.headers["X-Access-Code"] = code;
+    res = await fetch(path, opts);
+  }
+  if (res.status === 403) throw new Error((await res.json()).detail);
+  if (!res.ok) throw new Error("Error " + res.status);
+  return res.json();
+}
+
+function el(tag, props = {}, ...children) {
+  const e = document.createElement(tag);
+  Object.assign(e, props);
+  for (const c of children) e.append(c);
+  return e;
+}
+
+function markDirty() { dirty = true; status("Unsaved changes"); }
+function status(text) { document.getElementById("status").textContent = text; }
+
+function bound(obj, key, tag = "input", placeholder = "") {
+  const e = el(tag, { value: obj[key] || "", placeholder });
+  e.addEventListener("input", () => { obj[key] = e.value; markDirty(); });
+  return e;
+}
+
+// ---- render -------------------------------------------------------------
+function renderAll() {
+  document.getElementById("title").textContent = state.name + " · Shadow admin";
+  document.querySelectorAll("[data-field]").forEach(e => {
+    e.value = state[e.dataset.field] || "";
+    e.oninput = () => { state[e.dataset.field] = e.value; markDirty(); };
+  });
+  const hours = document.getElementById("hours");
+  hours.replaceChildren(...DAYS.map(d => el("div", { className: "row hours" },
+    el("span", { textContent: d[0].toUpperCase() + d.slice(1) }), bound(state.hours, d, "input", "closed"))));
+  const on = document.getElementById("bookingsOn");
+  on.checked = !!state.bookings;
+  on.onchange = () => { state.bookings = on.checked; markDirty(); };
+  document.getElementById("currentType").textContent = state.type ? "Current type: " + state.type : "";
+  renderItems(); renderFaqs(); renderUnanswered(); renderEmergencies(); renderRequests();
+}
+
+function renderEmergencies() {
+  state.emergencies = state.emergencies || [];
+  document.getElementById("emergencies").replaceChildren(...state.emergencies.map((em, i) => el("div", { className: "row emerg" },
+    bound(em, "keywords", "textarea", "burst pipe | flooding | water everywhere"), bound(em, "message", "textarea", "What Shadow should tell them"),
+    el("button", { type: "button", className: "x", textContent: "✕", title: "Remove",
+      onclick: () => { state.emergencies.splice(i, 1); renderEmergencies(); markDirty(); } }))));
+}
+
+function renderRequests() {
+  const list = [...(state.requests || [])].reverse();  // newest first
+  const fresh = list.filter(r => r.status === "new").length;
+  document.getElementById("reqCount").textContent = fresh || "";
+  document.title = (fresh ? `(${fresh}) ` : "") + state.name + " · Shadow admin";
+  const box = document.getElementById("requests");
+  if (!list.length) { box.replaceChildren(el("p", { className: "hint", textContent: "No requests yet." })); return; }
+  box.replaceChildren(...list.map(r => {
+    const when = r.time ? new Date(r.time).toLocaleString() : "";
+    const phone = el("a", { href: "tel:" + r.phone.replace(/[^+\d]/g, ""), textContent: r.phone });
+    return el("div", { className: "req" + (r.status === "done" ? " done" : "") },
+      el("div", {},
+        el("div", { className: "who" }, r.name + " · ", phone),
+        el("div", { textContent: r.details }),
+        el("div", { className: "meta", textContent: `Preferred: ${r.when} · received ${when}` })),
+      el("div", { className: "actions" },
+        r.status === "new"
+          ? el("button", { type: "button", className: "primary", textContent: "Done", onclick: () => setRequest(r.id, "done") })
+          : el("button", { type: "button", textContent: "Reopen", onclick: () => setRequest(r.id, "new") }),
+        el("button", { type: "button", className: "x", textContent: "✕", title: "Delete", onclick: () => setRequest(r.id, "delete") })));
+  }));
+}
+
+async function setRequest(id, next) {
+  if (next === "delete" && !confirm("Delete this request?")) return;
+  try {
+    await api("/api/admin/requests/" + id, { method: "POST", body: JSON.stringify({ status: next }) });
+    if (next === "delete") state.requests = state.requests.filter(r => r.id !== id);
+    else state.requests.find(r => r.id === id).status = next;
+    renderRequests();
+  } catch (e) { status(e.message); }
+}
+
+// ---- templates --------------------------------------------------------------
+api("/api/admin/templates").then(list => {
+  const pick = document.getElementById("templatePick");
+  for (const t of list) pick.append(el("option", { value: t.id, textContent: t.label }));
+}).catch(() => {});
+
+document.getElementById("useTemplate").onclick = async () => {
+  const id = document.getElementById("templatePick").value;
+  if (!id) return;
+  if (!confirm("This replaces your services, prices, Q&As, hours and emergencies on this page. Continue?")) return;
+  try {
+    const tpl = await api("/api/admin/templates/" + id);
+    Object.assign(state, tpl);
+    renderAll(); markDirty();
+    status("Template loaded. Check the details and prices, then click Save changes.");
+  } catch (e) { status(e.message); }
+};
+
+function renderItems() {
+  document.getElementById("items").replaceChildren(...state.items.map((item, i) => el("div", { className: "row item" },
+    bound(item, "name", "input", "Name"), bound(item, "price", "input", "Price"), bound(item, "details", "input", "Details (optional)"),
+    el("button", { type: "button", className: "x", textContent: "✕", title: "Remove",
+      onclick: () => { state.items.splice(i, 1); renderItems(); markDirty(); } }))));
+}
+
+function renderFaqs() {
+  document.getElementById("faqs").replaceChildren(...state.faqs.map((faq, i) => el("div", { className: "row faq" },
+    bound(faq, "q", "textarea", "Question (alternatives separated by |)"), bound(faq, "a", "textarea", "Answer"),
+    el("button", { type: "button", className: "x", textContent: "✕", title: "Remove",
+      onclick: () => { state.faqs.splice(i, 1); renderFaqs(); markDirty(); } }))));
+}
+
+function renderUnanswered() {
+  const list = [...state.unanswered].sort((a, b) => b.count - a.count);
+  document.getElementById("unCount").textContent = list.length || "";
+  const box = document.getElementById("unanswered");
+  if (!list.length) { box.replaceChildren(el("p", { className: "hint", textContent: "Nothing waiting. Shadow answered everything so far." })); return; }
+  box.replaceChildren(...list.map(u => {
+    const answer = el("textarea", { placeholder: "Your answer…" });
+    return el("div", { className: "q" },
+      el("strong", {}, u.q + " ", el("span", { className: "count", textContent: u.count > 1 ? `(asked ${u.count} times)` : "" })),
+      answer,
+      el("div", { className: "actions" },
+        el("button", { type: "button", className: "primary", textContent: "Teach Shadow",
+          onclick: () => answer.value.trim() && teach(u.q, answer.value.trim()) }),
+        el("button", { type: "button", className: "x", textContent: "Dismiss", onclick: () => dismiss(u.q) })));
+  }));
+}
+
+// ---- learning -------------------------------------------------------------
+const norm = s => s.toLowerCase().normalize("NFKD").replace(/[̀-ͯ]/g, "").replace(/^[\s?!.]+|[\s?!.]+$/g, "");
+
+async function teach(q, a) {
+  try {
+    await api("/api/admin/teach", { method: "POST", body: JSON.stringify({ q, a }) });
+    // Mirror the change locally so unsaved edits elsewhere on the page are kept.
+    state.faqs = state.faqs.filter(f => norm(f.q) !== norm(q)).concat([{ q, a }]);
+    state.unanswered = state.unanswered.filter(u => norm(u.q) !== norm(q));
+    renderFaqs(); renderUnanswered();
+    status("Shadow learned: " + q);
+  } catch (e) { status(e.message); }
+}
+
+async function dismiss(q) {
+  try {
+    await api("/api/admin/dismiss", { method: "POST", body: JSON.stringify({ message: q }) });
+    state.unanswered = state.unanswered.filter(u => norm(u.q) !== norm(q));
+    renderUnanswered();
+  } catch (e) { status(e.message); }
+}
+
+// ---- teach & test chat ----------------------------------------------------
+const chat = document.getElementById("chat");
+let pendingQuestion = null;
+
+function say(cls, text) {
+  chat.append(el("div", { className: "msg " + cls, textContent: text }));
+  chat.scrollTop = chat.scrollHeight;
+}
+
+document.getElementById("chatForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const box = document.getElementById("chatInput");
+  const text = box.value.trim();
+  if (!text) return;
+  box.value = "";
+  say("me", text);
+
+  if (pendingQuestion) {  // this message is the answer to teach
+    const q = pendingQuestion;
+    pendingQuestion = null;
+    box.placeholder = "Try a customer question, or teach Shadow…";
+    if (/^(skip|cancel|never ?mind)$/i.test(text)) { say("bot", "Okay, skipped."); return; }
+    await teach(q, text);
+    say("bot", `Learned! When a customer asks “${q}”, I'll say: ${text}`);
+    return;
+  }
+  try {
+    const res = await api("/api/admin/chat", { method: "POST", body: JSON.stringify({ message: text }) });
+    say("bot", res.reply);
+    if (!res.known) {
+      pendingQuestion = text;
+      box.placeholder = "Type the answer (or 'skip')";
+    } else if (res.reply.startsWith("Learned!")) {
+      const kb = await api("/api/admin/kb");  // pick up the taught FAQ
+      state.faqs = kb.faqs; state.unanswered = kb.unanswered;
+      renderFaqs(); renderUnanswered();
+    }
+  } catch (err) { say("bot", err.message); }
+});
+
+// ---- save -----------------------------------------------------------------
+document.getElementById("addItem").onclick = () => { state.items.push({ name: "", price: "", details: "" }); renderItems(); markDirty(); };
+document.getElementById("addEmergency").onclick = () => { state.emergencies.push({ keywords: "", message: "" }); renderEmergencies(); markDirty(); };
+document.getElementById("addFaq").onclick = () => { state.faqs.push({ q: "", a: "" }); renderFaqs(); markDirty(); };
+
+document.getElementById("save").onclick = async () => {
+  try {
+    const saved = await api("/api/admin/kb", { method: "PUT", body: JSON.stringify(state) });
+    state = saved; dirty = false; renderAll();
+    status("Saved ✓ Shadow is using the new information.");
+  } catch (e) { status(e.message); }
+};
+
+window.addEventListener("beforeunload", (e) => { if (dirty) { e.preventDefault(); e.returnValue = ""; } });
+
+api("/api/admin/kb").then(kb => {
+  state = kb; renderAll();
+  api("/api/admin/links").then(l => {
+    const a = document.getElementById("custLink");
+    a.textContent = a.href = l.customer;
+  }).catch(() => {});
+  say("bot", "Hi! Ask me a customer question to test me, or teach me something new.");
+}).catch(e => status(e.message));
+
+// New unanswered questions show up without reloading.
+setInterval(async () => {
+  try {
+    const kb = await api("/api/admin/kb");
+    if (JSON.stringify(kb.requests) !== JSON.stringify(state.requests)) {
+      state.requests = kb.requests;
+      renderRequests();
+    }
+    const same = JSON.stringify(kb.unanswered.map(u => [u.q, u.count])) === JSON.stringify(state.unanswered.map(u => [u.q, u.count]));
+    const typing = [...document.querySelectorAll("#unanswered textarea")].some(t => t.value.trim());
+    if (same || typing) return;  // don't wipe an answer you're writing
+    state.unanswered = kb.unanswered;
+    renderUnanswered();
+  } catch {}
+}, 15000);
+</script>
+</body>
+</html>

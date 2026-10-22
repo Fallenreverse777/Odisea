@@ -1,0 +1,86 @@
+{
+  "label": "Hair salon / barber",
+  "about": "Friendly hair salon for cuts, colour, styling and treatments.",
+  "hours": {
+    "monday": "closed",
+    "tuesday": "10:00-20:00",
+    "wednesday": "10:00-20:00",
+    "thursday": "10:00-20:00",
+    "friday": "10:00-20:00",
+    "saturday": "09:00-15:00",
+    "sunday": "closed"
+  },
+  "service_area": "",
+  "bookings": true,
+  "booking_label": "Book an appointment",
+  "booking_question": "Which service would you like? (e.g. women's cut, men's cut, colour, highlights) Any stylist you prefer?",
+  "items": [
+    {
+      "name": "Women's cut and blow-dry",
+      "price": "from 35 €",
+      "details": "About 1 hour"
+    },
+    {
+      "name": "Men's cut",
+      "price": "from 18 €",
+      "details": "About 30 minutes"
+    },
+    {
+      "name": "Children's cut",
+      "price": "from 12 €",
+      "details": "Under 12"
+    },
+    {
+      "name": "Beard trim",
+      "price": "10 €",
+      "details": ""
+    },
+    {
+      "name": "Colour",
+      "price": "from 45 €",
+      "details": "Full head"
+    },
+    {
+      "name": "Highlights",
+      "price": "from 60 €",
+      "details": ""
+    },
+    {
+      "name": "Blow-dry",
+      "price": "from 20 €",
+      "details": ""
+    },
+    {
+      "name": "Keratin treatment",
+      "price": "from 90 €",
+      "details": ""
+    }
+  ],
+  "faqs": [
+    {
+      "q": "Do you take walk-ins? | walk in | walk-ins | without booking first",
+      "a": "We take walk-ins when there's a free chair, but booking is the best way to avoid waiting."
+    },
+    {
+      "q": "Do I need a patch test for colour? | allergy test | skin test",
+      "a": "Yes, if it's your first colour with us or it's been more than 6 months, we do a quick patch test at least 48 hours before."
+    },
+    {
+      "q": "How do I cancel or change my appointment? | cancel | reschedule",
+      "a": "Just let us know at least 24 hours before, by phone or message."
+    },
+    {
+      "q": "How long does colour take? | how long will it take",
+      "a": "A full colour takes about 1.5 to 2 hours; highlights about 2 to 3 hours."
+    },
+    {
+      "q": "Do you sell hair products? | shampoo | products",
+      "a": "Yes, we sell the professional products we use in the salon. Ask your stylist for advice."
+    },
+    {
+      "q": "Do you do wedding hair? | bridal | updo | event hair",
+      "a": "Yes! We do bridal and event styling, including trials. Book a consultation to plan it."
+    }
+  ],
+  "emergencies": []
+}

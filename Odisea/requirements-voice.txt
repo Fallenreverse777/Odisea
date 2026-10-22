@@ -1,0 +1,4 @@
+# Extra packages for `python -m shadow.voice`
+pyttsx3>=2.90
+SpeechRecognition>=3.10
+PyAudio>=0.2.13

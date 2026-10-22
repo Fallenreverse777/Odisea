@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0e0f13">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Shadow</title>
+<style>
+  :root { --bg:#0e0f13; --panel:#171920; --me:#2b5cff; --them:#22252e; --text:#e8e9ee; --muted:#8a8e9c; }
+  * { box-sizing: border-box; }
+  html, body { margin:0; height:100%; background:var(--bg); color:var(--text);
+    font: 16px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  body { display:flex; flex-direction:column; height:100dvh; }
+  header { padding:14px 16px; padding-top:max(14px, env(safe-area-inset-top));
+    border-bottom:1px solid #23262f; display:flex; align-items:center; gap:10px; }
+  header .dot { width:10px; height:10px; border-radius:50%; background:#3ddc84; box-shadow:0 0 8px #3ddc84; }
+  header h1 { font-size:18px; margin:0; font-weight:600; letter-spacing:.5px; flex:1; }
+  .icon { background:none; border:1px solid #2c303b; border-radius:50%; width:38px; height:38px;
+    padding:0; font-size:18px; color:var(--text); }
+  .icon.on { background:var(--me); border-color:var(--me); }
+  .icon.listening { background:#e5484d; border-color:#e5484d; }
+  .hidden { display:none; }
+  #log { flex:1; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:10px; }
+  .msg { max-width:85%; padding:10px 14px; border-radius:18px; white-space:pre-wrap; word-wrap:break-word; }
+  .user { align-self:flex-end; background:var(--me); border-bottom-right-radius:6px; }
+  .assistant { align-self:flex-start; background:var(--them); border-bottom-left-radius:6px; }
+  .note { align-self:center; color:var(--muted); font-size:13px; }
+  form { display:flex; gap:8px; padding:10px 12px; padding-bottom:max(10px, env(safe-area-inset-bottom));
+    background:var(--panel); border-top:1px solid #23262f; }
+  textarea { flex:1; resize:none; border:0; outline:0; border-radius:20px; padding:10px 14px;
+    background:#0e0f13; color:var(--text); font:inherit; max-height:120px; }
+  button { border:0; border-radius:20px; padding:0 18px; background:var(--me); color:#fff; font:inherit; font-weight:600; }
+  button:disabled { opacity:.5; }
+</style>
+</head>
+<body>
+<header>
+  <span class="dot"></span><h1>Shadow</h1>
+  <button id="voiceToggle" class="icon" type="button" title="Read replies out loud">🔈</button>
+</header>
+<div id="log"></div>
+<form id="form">
+  <button id="mic" class="icon hidden" type="button" title="Speak">🎤</button>
+  <textarea id="input" rows="1" placeholder="Talk to Shadow…" autocomplete="off"></textarea>
+  <button id="send" type="submit">Send</button>
+</form>
+<script>
+const log = document.getElementById("log");
+const input = document.getElementById("input");
+const send = document.getElementById("send");
+
+function getCode() {
+  try { return localStorage.getItem("shadowCode") || ""; } catch { return ""; }
+}
+function setCode(c) {
+  try { localStorage.setItem("shadowCode", c); } catch {}
+}
+
+async function api(path, opts = {}) {
+  opts.headers = { ...(opts.headers || {}), "X-Access-Code": getCode() };
+  let res = await fetch(path, opts);
+  if (res.status === 401) {
+    const code = prompt("Access code for Shadow:");
+    if (code === null) throw new Error("No access code");
+    setCode(code);
+    opts.headers["X-Access-Code"] = code;
+    res = await fetch(path, opts);
+  }
+  if (!res.ok) throw new Error(`Error ${res.status}`);
+  return res;
+}
+
+// ---- Voice -------------------------------------------------------------
+// Speaking uses the device's built-in voice (works offline on most devices).
+// Listening uses the browser's speech recognition; browsers only allow the
+// microphone on secure pages, so the mic button shows on the PC (localhost)
+// but usually not on the phone. On the phone, use your keyboard's mic key.
+const voiceToggle = document.getElementById("voiceToggle");
+const micBtn = document.getElementById("mic");
+let voiceOn = false;
+try { voiceOn = localStorage.getItem("shadowVoice") === "on"; } catch {}
+
+function showVoice() {
+  voiceToggle.classList.toggle("on", voiceOn);
+  voiceToggle.textContent = voiceOn ? "🔊" : "🔈";
+}
+showVoice();
+voiceToggle.addEventListener("click", () => {
+  voiceOn = !voiceOn;
+  try { localStorage.setItem("shadowVoice", voiceOn ? "on" : "off"); } catch {}
+  showVoice();
+  if (!voiceOn) speechSynthesis.cancel();
+  else speak("Voice on.");
+});
+
+function speak(text) {
+  if (!voiceOn || !("speechSynthesis" in window)) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text.replace(/⏰/g, ""));
+  u.rate = 1.0;
+  speechSynthesis.speak(u);
+}
+
+const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+if (Recognition && window.isSecureContext) {
+  micBtn.classList.remove("hidden");
+  const rec = new Recognition();
+  rec.lang = navigator.language || "en-US";
+  rec.interimResults = false;
+  rec.onresult = (e) => {
+    input.value = e.results[0][0].transcript;
+    voiceOn = true; showVoice();  // you spoke, so Shadow answers out loud
+    document.getElementById("form").requestSubmit();
+  };
+  rec.onend = () => micBtn.classList.remove("listening");
+  micBtn.addEventListener("click", () => {
+    speechSynthesis.cancel();
+    micBtn.classList.add("listening");
+    try { rec.start(); } catch { micBtn.classList.remove("listening"); }
+  });
+}
+
+// ---- Chat ----------------------------------------------------------------
+function add(role, text) {
+  const el = document.createElement("div");
+  el.className = "msg " + role;
+  el.textContent = text;
+  log.appendChild(el);
+  log.scrollTop = log.scrollHeight;
+  return el;
+}
+
+async function loadHistory() {
+  try {
+    const res = await api("/api/history");
+    const msgs = await res.json();
+    if (!msgs.length) add("note", "Say hi to Shadow.");
+    msgs.forEach(m => add(m.role, m.content));
+  } catch (e) { add("note", e.message); }
+}
+
+document.getElementById("form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = ""; input.style.height = "";
+  send.disabled = true;
+
+  if (text.startsWith("/remember ")) {
+    try {
+      await api("/api/remember", { method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fact: text.slice(10) }) });
+      add("note", "Shadow will remember that.");
+    } catch (err) { add("note", err.message); }
+    send.disabled = false;
+    return;
+  }
+
+  add("user", text);
+  const bubble = add("assistant", "…");
+  try {
+    const res = await api("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: text }) });
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let reply = "";
+    for (;;) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      reply += decoder.decode(value, { stream: true });
+      bubble.textContent = reply;
+      log.scrollTop = log.scrollHeight;
+    }
+    speak(reply);
+  } catch (err) { bubble.textContent = "[" + err.message + "]"; }
+  send.disabled = false;
+  input.focus();
+});
+
+input.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey && window.matchMedia("(pointer: fine)").matches) {
+    e.preventDefault(); document.getElementById("form").requestSubmit();
+  }
+});
+input.addEventListener("input", () => {
+  input.style.height = "auto"; input.style.height = input.scrollHeight + "px";
+});
+
+let lastAlert = 0;
+async function checkAlerts(first = false) {
+  try {
+    // Plain fetch: a background check should never pop up the access-code prompt.
+    const res = await fetch("/api/alerts?after=" + lastAlert, { headers: { "X-Access-Code": getCode() } });
+    if (!res.ok) return;
+    for (const alert of await res.json()) {
+      lastAlert = Math.max(lastAlert, alert.id);
+      if (first) continue;  // don't replay old alerts when the page opens
+      add("assistant", alert.text);
+      speak(alert.text);
+      if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+    }
+  } catch {}
+}
+
+loadHistory();
+checkAlerts(true);
+setInterval(checkAlerts, 15000);
+</script>
+</body>
+</html>
